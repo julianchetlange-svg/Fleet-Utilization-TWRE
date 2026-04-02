@@ -302,14 +302,14 @@ select:focus,input:focus{outline:none;border-color:var(--gr);}
     <div class="card">
       <div class="ch"><h3>&#x25B2; Top 10 Store Locations</h3><span class="cnt">Highest Avg Utilization</span></div>
       <div class="cb" style="padding:0;"><div class="tw">
-        <table><thead><tr><th>Rank</th><th>Store</th><th>Region</th><th class="n">Avg Util</th><th class="n">Route Wt Util</th><th class="n">Avg Daily Del.</th><th class="n">Avg Duration</th><th class="n">% Active</th><th class="n">Mi/Delivery</th><th class="n">Miles 90d</th><th class="n">Avg Start</th><th class="n">Before 7AM</th></tr></thead>
+        <table><thead><tr><th>Rank</th><th>Store</th><th>Region</th><th class="n">Avg Util</th><th class="n">Route Wt Util</th><th class="n">Mi/Delivery</th><th class="n">Avg Daily Del.</th><th class="n">Avg Duration</th><th class="n">% Active</th><th class="n">Miles 90d</th><th class="n">Avg Start</th><th class="n">Before 7AM</th></tr></thead>
         <tbody id="rank-top-body"></tbody></table>
       </div></div>
     </div>
     <div class="card">
       <div class="ch"><h3>&#x25BC; Bottom 10 Store Locations</h3><span class="cnt">Lowest Avg Utilization</span></div>
       <div class="cb" style="padding:0;"><div class="tw">
-        <table><thead><tr><th>Rank</th><th>Store</th><th>Region</th><th class="n">Avg Util</th><th class="n">Route Wt Util</th><th class="n">Avg Daily Del.</th><th class="n">Avg Duration</th><th class="n">% Active</th><th class="n">Mi/Delivery</th><th class="n">Miles 90d</th><th class="n">Avg Start</th><th class="n">Before 7AM</th></tr></thead>
+        <table><thead><tr><th>Rank</th><th>Store</th><th>Region</th><th class="n">Avg Util</th><th class="n">Route Wt Util</th><th class="n">Mi/Delivery</th><th class="n">Avg Daily Del.</th><th class="n">Avg Duration</th><th class="n">% Active</th><th class="n">Miles 90d</th><th class="n">Avg Start</th><th class="n">Before 7AM</th></tr></thead>
         <tbody id="rank-bot-body"></tbody></table>
       </div></div>
     </div>
@@ -643,6 +643,7 @@ function renderOverview(){
     '<div class="kpi d"><div class="kl">Sub-10% Non-Pickup</div><div class="kv rd">'+b10+'</div><div class="ks">Candidates for removal</div></div>';
 
   const fleetDailyDel=(DEL.fleet/63).toFixed(1);
+  const pct8Cls=RT.fleet.pct8>=75?'gr':RT.fleet.pct8>=50?'am':'rd';
   document.getElementById('overview-kpis2').innerHTML=
     '<div class="kpi '+(RWU.fleet>=50?'g':RWU.fleet>=35?'y':'r')+'"><div class="kl">Avg Route Weight Util</div><div class="kv '+(RWU.fleet>=50?'gr':RWU.fleet>=35?'yl':'rd')+'">'+RWU.fleet+'%</div><div class="ks">Payload capacity used per route &bull; store ops scope</div></div>'+
     '<div class="kpi b"><div class="kl">Avg Daily Deliveries</div><div class="kv bl">'+fleetDailyDel+'</div><div class="ks">Fleet-wide &bull; '+fmtNum(DEL.fleet)+' total &bull; 63 business days</div></div>'+
@@ -651,13 +652,11 @@ function renderOverview(){
     '<div class="kpi b"><div class="kl">Avg Deliveries / Route</div><div class="kv bl">'+DUR.fleet.del_per_route+'</div><div class="ks">Stops per route run &bull; Stores 1–120, 355CD &amp; 761–768</div></div>'+
     '<div class="kpi b"><div class="kl">Avg Route Efficiency</div><div class="kv bl">'+MD.fleet+'<span style="font-size:16px;font-weight:400"> mi/delivery</span></div><div class="ks">Miles driven per delivery &bull; Jan–Mar 2026</div></div>'+
     '<div class="kpi b"><div class="kl">Total Miles (90 Days)</div><div class="kv bl">'+fmtNum(ML.fleet)+'</div><div class="ks">Fleet-wide driven distance &bull; Jan–Mar 2026</div></div>'+
-    '';
-
-  const pct8Cls=RT.fleet.pct8>=75?'gr':RT.fleet.pct8>=50?'am':'rd';
-  document.getElementById('overview-kpis3').innerHTML=
     '<div class="kpi d"><div class="kl">&#9650; Fleet Avg First Departure</div><div class="kv" style="font-size:26px;">'+(RT.fleet.rst||'—')+'</div><div class="ks">Avg first exit from geofence &bull; 422 assets matched</div></div>'+
     '<div class="kpi '+pct8Cls+'"><div class="kl">% Days Departing Before 7AM</div><div class="kv '+pct8Cls.replace("gr","gr").replace("am","am").replace("rd","rd")+'">'+RT.fleet.pct8+'%</div><div class="ks">Fleet-wide average across all assets</div></div>'+
-    '<div class="kpi d" style="grid-column:span 2;"><div class="kl">First Departure Coverage</div><div class="kv" style="font-size:26px;">422<span style="font-size:16px;font-weight:400"> of 422 assets matched</span></div><div class="ks">First geofence exit vs prior route start time data</div></div>';
+    '';
+
+  document.getElementById('overview-kpis3').innerHTML='';
 
   // Distribution chart
   dc('dist');
@@ -714,7 +713,7 @@ function renderRegions(){
       const lldurObj=DUR.loc[String(l.location)];
       const lldur=lldurObj?lldurObj.dur:'—';
       const llpctActive=lldurObj?lldurObj.pct_active+'%':'—';
-      return'<tr><td><strong>'+(l.identifier||l.location)+'</strong>'+tags+'</td><td class="n">'+l.asset_count+'</td><td class="n">'+pill(l.avg_util)+'</td><td class="n">'+wu+'</td><td class="n">'+lDailyDel+'</td><td class="n">'+lldur+'</td><td class="n">'+llpctActive+'</td><td class="n">'+(MD.loc[String(l.location)]!=null?MD.loc[String(l.location)]+' mi':'—')+'</td><td class="n">'+(llrt?llrt.rst:'—')+'</td><td class="n">'+lpct8+'</td></tr>';
+      return'<tr><td><strong>'+(l.identifier||l.location)+'</strong>'+tags+'</td><td class="n">'+l.asset_count+'</td><td class="n">'+pill(l.avg_util)+'</td><td class="n">'+wu+'</td><td class="n">'+(MD.loc[String(l.location)]!=null?MD.loc[String(l.location)]+' mi':'—')+'</td><td class="n">'+lDailyDel+'</td><td class="n">'+lldur+'</td><td class="n">'+llpctActive+'</td><td class="n">'+(llrt?llrt.rst:'—')+'</td><td class="n">'+lpct8+'</td></tr>';
     }).join('');
     return'<div class="reg-card">'+
       '<div class="rch" style="border-left-color:'+col+';" onclick="toggleReg(this.dataset.r)" data-r="'+id+'">'+
@@ -738,7 +737,7 @@ function renderRegions(){
           '<div class="rsb-cell"><div class="rsb-label">Under Target</div><div class="rsb-val" style="color:var(--rd)">'+(reg.red||0)+'</div></div>'+
         '</div>'+
         '<div class="rsb">'+
-          '<div class="rsb-cell"><div class="rsb-label">Wt Utilization</div><div class="rsb-val" style="color:var(--bl)">'+(RWU.reg[reg.region]!=null?RWU.reg[reg.region]+'%':'—')+'</div></div>'+
+          '<div class="rsb-cell"><div class="rsb-label">Wt Utilization</div><div class="rsb-val" style="color:'+(RWU.reg[reg.region]!=null?(RWU.reg[reg.region]>=50?'var(--gr)':RWU.reg[reg.region]>=35?'var(--ym)':'var(--rd)'):'var(--bl)')+'">'+(RWU.reg[reg.region]!=null?RWU.reg[reg.region]+'%':'—')+'</div></div>'+
           '<div class="rsb-cell"><div class="rsb-label">Avg Daily Deliveries</div><div class="rsb-val" style="color:var(--bl)">'+(DEL.reg[reg.region]!=null?(DEL.reg[reg.region]/63).toFixed(1):'—')+'</div></div>'+
           '<div class="rsb-cell"><div class="rsb-label">Route Efficiency</div><div class="rsb-val" style="color:var(--bl)">'+(MD.reg[reg.region]!=null?MD.reg[reg.region]:'—')+' mi</div></div>'+
           '<div class="rsb-cell"><div class="rsb-label">Total Miles</div><div class="rsb-val" style="color:var(--bl)">'+fmtNum(ML.reg[reg.region]||reg.total_miles_90)+'</div></div>'+
@@ -751,7 +750,7 @@ function renderRegions(){
             '<div class="rsb-cell"><div class="rsb-label">% Days Active</div><div class="rsb-val" style="font-size:17px;color:var(--bl)">'+(DUR.reg[reg.region]?DUR.reg[reg.region].pct_active+'%':'—')+'</div></div>'+
             '<div class="rsb-cell"><div class="rsb-label">Avg first geofence exit</div><div class="rsb-val" style="font-size:13px;color:var(--gy);font-weight:400;">Weighted avg by delivery count</div></div>'+
           '</div>':'')+
-        '<div style="overflow-x:auto;"><table><thead><tr><th>Store</th><th class="n">Assets</th><th class="n">Avg Util</th><th class="n">Route Wt Util</th><th class="n">Avg Daily Del.</th><th class="n">Avg Duration</th><th class="n">% Active</th><th class="n">Mi/Delivery</th><th class="n">Avg Start</th><th class="n">Before 7AM</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
+        '<div style="overflow-x:auto;"><table><thead><tr><th>Store</th><th class="n">Assets</th><th class="n">Avg Util</th><th class="n">Route Wt Util</th><th class="n">Mi/Delivery</th><th class="n">Avg Daily Del.</th><th class="n">Avg Duration</th><th class="n">% Active</th><th class="n">Avg Start</th><th class="n">Before 7AM</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
       '</div>'+
     '</div>';
   }).join('');
@@ -779,10 +778,10 @@ function renderRankings(){
     return'<tr><td><span class="rank '+cls+'">'+rank+'</span></td><td><strong>'+(l.identifier||l.location)+'</strong>'+tags+'</td><td>'+regBadge(l.region)+'</td>'+
       '<td class="n">'+pill(l.avg_util)+'</td>'+
       '<td class="n">'+wu+'</td>'+
+      '<td class="n">'+(MD.loc[String(l.location)]!=null?MD.loc[String(l.location)]:'—')+'</td>'+
       '<td class="n">'+dailyDel+'</td>'+
       '<td class="n">'+rdur+'</td>'+
       '<td class="n">'+rpctActive+'</td>'+
-      '<td class="n">'+(MD.loc[String(l.location)]!=null?MD.loc[String(l.location)]:'—')+'</td>'+
       '<td class="n">'+fmtNum(ML.loc[String(l.location)]||l.total_miles_90)+'</td>'+
       '<td class="n">'+(rrt?rrt.rst:'—')+'</td>'+
       '<td class="n">'+rpct8+'</td></tr>';
@@ -808,7 +807,7 @@ function renderStores(){
   document.getElementById('store-grid').innerHTML=filtered.map(l=>{
     const c=uCls(l.avg_util),pct=(l.avg_util*100).toFixed(1),id='loc-'+l.location;
     const storeAssets=(RD.assetsByLoc[String(l.location)]||[]);
-    const rows=storeAssets.map(a=>{const art=assetRT(a.aid);const adurObj=assetDur(a.aid);const adur=adurObj?adurObj.dur:'—';const apctActive=adurObj?adurObj.pct_active+'%':'—';return'<tr><td>'+a.aid+'</td><td>'+a.type+'</td><td class="n">'+a.days+'</td><td class="n">'+a.away.toFixed(2)+'</td><td class="n">'+pill(a.util)+'</td><td class="n">'+(assetRWU(a.aid)!=null?'<span class="pill '+(assetRWU(a.aid)>=50?'util-green':assetRWU(a.aid)>=35?'util-yellow':'util-red')+'">'+assetRWU(a.aid)+'%</span>':'—')+'</td><td class="n">'+(assetDel(a.aid)!=null?(assetDel(a.aid)/63).toFixed(1):'—')+'</td><td class="n">'+adur+'</td><td class="n">'+apctActive+'</td><td class="n">'+fmtNum(assetMiles(a.aid)!=null?assetMiles(a.aid):0)+'</td><td class="n">'+(assetMD(a.aid)!=null?assetMD(a.aid)+' mi':'—')+'</td><td class="n">'+(art?art.rst:'—')+'</td><td class="n">'+(art?'<span class="pill '+(art.pct8>=75?'util-green':art.pct8>=50?'util-yellow':'util-red')+'">'+art.pct8+'%</span>':'—')+'</td></tr>';}).join('');
+    const rows=storeAssets.map(a=>{const art=assetRT(a.aid);const adurObj=assetDur(a.aid);const adur=adurObj?adurObj.dur:'—';const apctActive=adurObj?adurObj.pct_active+'%':'—';return'<tr><td>'+a.aid+'</td><td>'+a.type+'</td><td class="n">'+a.days+'</td><td class="n">'+a.away.toFixed(2)+'</td><td class="n">'+pill(a.util)+'</td><td class="n">'+(assetRWU(a.aid)!=null?'<span class="pill '+(assetRWU(a.aid)>=50?'util-green':assetRWU(a.aid)>=35?'util-yellow':'util-red')+'">'+assetRWU(a.aid)+'%</span>':'—')+'</td><td class="n">'+(assetMD(a.aid)!=null?assetMD(a.aid)+' mi':'—')+'</td><td class="n">'+(assetDel(a.aid)!=null?(assetDel(a.aid)/63).toFixed(1):'—')+'</td><td class="n">'+adur+'</td><td class="n">'+apctActive+'</td><td class="n">'+fmtNum(assetMiles(a.aid)!=null?assetMiles(a.aid):0)+'</td><td class="n">'+(art?art.rst:'—')+'</td><td class="n">'+(art?'<span class="pill '+(art.pct8>=75?'util-green':art.pct8>=50?'util-yellow':'util-red')+'">'+art.pct8+'%</span>':'—')+'</td></tr>';}).join('');
     const tags=(isLoaner(l.location)?'<span class="loaner-badge">Regional Loaner</span>':'')+(isCD(l.location)?'<span class="cd-badge">Central Delivery</span>':'');
     return'<div class="store-card">'+
       '<div class="sch b'+c[5]+'" style="border-left-color:'+(c==='util-green'?'var(--gr)':c==='util-yellow'?'var(--yl)':'var(--rd)')+';" onclick="toggleStore(this.dataset.r)" data-r="'+id+'">'+
@@ -819,7 +818,7 @@ function renderStores(){
           '<span class="schev" id="schev-'+id+'">&#9660;</span>'+
         '</div>'+
       '</div>'+
-      '<div class="scb" id="'+id+'"><table><thead><tr><th>Asset</th><th>Type</th><th class="n">Days</th><th class="n">Away Hrs</th><th class="n">Util</th><th class="n">Route Wt Util</th><th class="n">Del/Day</th><th class="n">Avg Duration</th><th class="n">% Active</th><th class="n">Miles</th><th class="n">Mi/Delivery</th><th class="n">Avg Start</th><th class="n">Before 7AM</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
+      '<div class="scb" id="'+id+'"><table><thead><tr><th>Asset</th><th>Type</th><th class="n">Days</th><th class="n">Away Hrs</th><th class="n">Util</th><th class="n">Route Wt Util</th><th class="n">Mi/Delivery</th><th class="n">Del/Day</th><th class="n">Avg Duration</th><th class="n">% Active</th><th class="n">Miles</th><th class="n">Avg Start</th><th class="n">Before 7AM</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
     '</div>';
   }).join('');
 }
