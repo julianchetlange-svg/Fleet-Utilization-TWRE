@@ -103,9 +103,9 @@ body{font-family:'Source Sans 3',sans-serif;background:var(--bg);color:var(--dk)
 .tw{overflow-x:auto;}
 table{width:100%;border-collapse:collapse;font-size:13px;}
 thead th{background:#fafafa;padding:7px 13px;text-align:left;font-size:10px;color:var(--gl);text-transform:uppercase;letter-spacing:.6px;border-bottom:1px solid var(--bd);font-weight:700;white-space:nowrap;}
-thead th.n{text-align:right;}
+thead th.n{text-align:center;}
 tbody td{padding:8px 13px;border-bottom:1px solid #f4f4f4;vertical-align:middle;}
-tbody td.n{text-align:right;font-variant-numeric:tabular-nums;}
+tbody td.n{text-align:center;font-variant-numeric:tabular-nums;}
 tbody tr:last-child td{border-bottom:none;}
 tbody tr:hover td{background:var(--grp);}
 .rank{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:4px;font-size:11px;font-weight:700;background:var(--bg);color:var(--gy);}
@@ -135,7 +135,7 @@ tbody tr:hover td{background:var(--grp);}
 .rch-right{display:flex;align-items:center;gap:12px;}
 .r-gyr{display:flex;gap:4px;}
 .r-gyr-pill{font-size:11px;font-weight:700;padding:2px 8px;border-radius:3px;}
-.r-util{font-family:'Oswald',sans-serif;font-size:18px;font-weight:700;text-align:right;}
+.r-util{font-family:'Oswald',sans-serif;font-size:18px;font-weight:700;text-align:center;}
 .r-bar-bg{height:4px;background:#e8e8e8;border-radius:2px;overflow:hidden;margin-top:3px;width:70px;}
 .r-bar-fg{height:100%;border-radius:2px;}
 .rbody{display:none;border-top:2px solid var(--yl);}
@@ -279,14 +279,14 @@ select:focus,input:focus{outline:none;border-color:var(--gr);}
     <div class="card">
       <div class="ch"><h3>&#x25B2; Top 10 Stores</h3><span class="cnt">Highest Utilization</span></div>
       <div class="cb" style="padding:0;"><div class="tw">
-        <table><thead><tr><th>Rank</th><th>Store</th><th>Region</th><th class="n">Avg Util</th><th class="n">Assets</th><th class="n">Deliveries</th><th class="n">Avg Duration</th><th class="n">% Asset Days Active</th><th class="n">Route Wt Util</th><th class="n">Avg Start</th><th class="n">Before 7AM</th><th class="n">Cost/Del</th><th class="n">Fleet Fuel $/Mi</th><th class="n">Fuel Q1</th></tr></thead>
+        <table><thead><tr><th>Rank</th><th>Store</th><th>Region</th><th class="n">Avg Util</th><th class="n">Assets</th><th class="n">Deliveries</th><th class="n">Avg Duration</th><th class="n">% Asset Days Active</th><th class="n">Route Wt Util</th><th class="n">Avg Start</th><th class="n">Before 7AM</th><th class="n">Cost/Del</th><th class="n">Fleet & Fuel $/Mi</th><th class="n">Fuel Q1</th></tr></thead>
         <tbody id="top10-body"></tbody></table>
       </div></div>
     </div>
     <div class="card">
       <div class="ch"><h3>&#x25BC; Bottom 10 Stores</h3><span class="cnt">Lowest Utilization</span></div>
       <div class="cb" style="padding:0;"><div class="tw">
-        <table><thead><tr><th>Rank</th><th>Store</th><th>Region</th><th class="n">Avg Util</th><th class="n">Assets</th><th class="n">Deliveries</th><th class="n">Avg Duration</th><th class="n">% Asset Days Active</th><th class="n">Route Wt Util</th><th class="n">Avg Start</th><th class="n">Before 7AM</th><th class="n">Cost/Del</th><th class="n">Fleet Fuel $/Mi</th><th class="n">Fuel Q1</th></tr></thead>
+        <table><thead><tr><th>Rank</th><th>Store</th><th>Region</th><th class="n">Avg Util</th><th class="n">Assets</th><th class="n">Deliveries</th><th class="n">Avg Duration</th><th class="n">% Asset Days Active</th><th class="n">Route Wt Util</th><th class="n">Avg Start</th><th class="n">Before 7AM</th><th class="n">Cost/Del</th><th class="n">Fleet & Fuel $/Mi</th><th class="n">Fuel Q1</th></tr></thead>
         <tbody id="bottom10-body"></tbody></table>
       </div></div>
     </div>
@@ -314,8 +314,9 @@ select:focus,input:focus{outline:none;border-color:var(--gr);}
       <h3>Store-Level P&amp;L Impact</h3>
       <span class="cnt">
         <select id="charge-sort" onchange="renderCharges()" style="font-size:11px;border:1px solid var(--bd);border-radius:3px;padding:2px 6px;">
-          <option value="annual">Sort: Annual Charge</option>
-          <option value="cpd">Sort: Cost/Delivery</option>
+          <option value="annual">Sort: Annual Fleet</option>
+          <option value="combined">Sort: Combined Annual</option>
+          <option value="cpd">Sort: Fleet CPD</option>
           <option value="util">Sort: Utilization</option>
           <option value="store">Sort: Store #</option>
         </select>
@@ -326,7 +327,8 @@ select:focus,input:focus{outline:none;border-color:var(--gr);}
         <th>Store</th><th>Region</th>
         <th class="n">Assets</th><th class="n">Avg Util</th>
         <th class="n">Monthly Charge</th><th class="n">Fixed</th><th class="n">Variable</th>
-        <th class="n">Annual P&amp;L</th><th class="n">Deliveries</th><th class="n">Cost / Delivery</th>
+        <th class="n">Annual Fleet</th><th class="n">Q1 Fuel</th><th class="n">Combined Annual</th>
+        <th class="n">Deliveries</th><th class="n">Fleet CPD</th><th class="n">Combined CPD</th>
       </tr></thead>
       <tbody id="store-charge-body"></tbody>
     </table></div></div>
@@ -347,14 +349,14 @@ select:focus,input:focus{outline:none;border-color:var(--gr);}
     <div class="card">
       <div class="ch"><h3>&#x25B2; Top 10 Store Locations</h3><span class="cnt">Highest Avg Utilization</span></div>
       <div class="cb" style="padding:0;"><div class="tw">
-        <table><thead><tr><th>Rank</th><th>Store</th><th>Region</th><th class="n">Avg Util</th><th class="n">Route Wt Util</th><th class="n">Mi/Delivery</th><th class="n">Avg Daily Del.</th><th class="n">Avg Duration</th><th class="n">% Asset Days Active</th><th class="n">Miles 90d</th><th class="n">Avg Start</th><th class="n">Before 7AM</th><th class="n">Fleet CPD</th><th class="n">Fuel CPD</th><th class="n">Total CPD</th><th class="n">Fleet Fuel $/Mi</th><th class="n">Fuel Q1</th></tr></thead>
+        <table><thead><tr><th>Rank</th><th>Store</th><th>Region</th><th class="n">Avg Util</th><th class="n">Route Wt Util</th><th class="n">Mi/Delivery</th><th class="n">Avg Daily Del.</th><th class="n">Avg Duration</th><th class="n">% Asset Days Active</th><th class="n">Miles 90d</th><th class="n">Avg Start</th><th class="n">Before 7AM</th><th class="n">Fleet CPD</th><th class="n">Fuel CPD</th><th class="n">Total CPD</th><th class="n">Fleet & Fuel $/Mi</th><th class="n">Fuel Q1</th></tr></thead>
         <tbody id="rank-top-body"></tbody></table>
       </div></div>
     </div>
     <div class="card">
       <div class="ch"><h3>&#x25BC; Bottom 10 Store Locations</h3><span class="cnt">Lowest Avg Utilization</span></div>
       <div class="cb" style="padding:0;"><div class="tw">
-        <table><thead><tr><th>Rank</th><th>Store</th><th>Region</th><th class="n">Avg Util</th><th class="n">Route Wt Util</th><th class="n">Mi/Delivery</th><th class="n">Avg Daily Del.</th><th class="n">Avg Duration</th><th class="n">% Asset Days Active</th><th class="n">Miles 90d</th><th class="n">Avg Start</th><th class="n">Before 7AM</th><th class="n">Fleet CPD</th><th class="n">Fuel CPD</th><th class="n">Total CPD</th><th class="n">Fleet Fuel $/Mi</th><th class="n">Fuel Q1</th></tr></thead>
+        <table><thead><tr><th>Rank</th><th>Store</th><th>Region</th><th class="n">Avg Util</th><th class="n">Route Wt Util</th><th class="n">Mi/Delivery</th><th class="n">Avg Daily Del.</th><th class="n">Avg Duration</th><th class="n">% Asset Days Active</th><th class="n">Miles 90d</th><th class="n">Avg Start</th><th class="n">Before 7AM</th><th class="n">Fleet CPD</th><th class="n">Fuel CPD</th><th class="n">Total CPD</th><th class="n">Fleet & Fuel $/Mi</th><th class="n">Fuel Q1</th></tr></thead>
         <tbody id="rank-bot-body"></tbody></table>
       </div></div>
     </div>
@@ -713,7 +715,7 @@ function renderOverview(){
     '<div class="kpi d"><div class="kl">Sub-10% Non-Pickup</div><div class="kv rd">'+b10+'</div><div class="ks">Candidates for removal</div></div>'+
     '<div class="kpi b"><div class="kl">Total Fleet Charge (Q1)</div><div class="kv bl">$'+Number(COST.fleet.mo*3).toLocaleString(undefined,{maximumFractionDigits:0})+'</div><div class="ks">Fixed + variable &bull; Jan&ndash;Mar 2026 total</div></div>'+
     '<div class="kpi y"><div class="kl">Total Fuel Cost (Q1)</div><div class="kv yl">$'+Number(FUEL.fleet.total).toLocaleString(undefined,{maximumFractionDigits:0})+'</div><div class="ks">Jan&ndash;Mar 2026 total &bull; $'+Number(FUEL.fleet.annual).toLocaleString(undefined,{maximumFractionDigits:0})+' annualized</div></div>'+
-    '<div class="kpi d"><div class="kl">Fleet Fuel Cost / Mile</div><div class="kv">$'+(2.38).toFixed(2)+'</div><div class="ks">Fleet charge + fuel &divide; miles driven</div></div>'+
+    '<div class="kpi d"><div class="kl">Fleet & Fuel Cost / Mile</div><div class="kv">$'+(2.38).toFixed(2)+'</div><div class="ks">Fleet charge + fuel &divide; miles driven</div></div>'+
     '<div class="kpi d"><div class="kl">Combined Cost / Delivery</div><div class="kv">$'+(54.54).toFixed(2)+'</div><div class="ks">Fleet charge + fuel &divide; deliveries</div></div>';
 
   const fleetDailyDel=(DEL.fleet/63).toFixed(1);
@@ -765,7 +767,7 @@ function renderOverview(){
     const ldurObj=DUR.loc[String(l.location)];
     const ldur=ldurObj?ldurObj.dur:'—';
     const lpctActive=ldurObj?ldurObj.pct_active+'%':'—';
-    return'<tr><td><span class="rank '+cls+'">'+(i+1)+'</span></td><td><strong>'+(l.identifier||l.location)+'</strong>'+tags+'</td><td>'+regBadge(l.region)+'</td><td class="n">'+pill(l.avg_util)+'</td><td class="n">'+l.asset_count+'</td><td class="n">'+dd+'</td><td class="n">'+ldur+'</td><td class="n">'+lpctActive+'</td><td class="n">'+wu+'</td><td class="n">'+(lrt?lrt.rst:'—')+'</td><td class="n">'+pct8pill+'</td><td class="n">'+(storeCPD(l.location)!=null?'$'+storeCPD(l.location).toFixed(2):'—')+'</td><td class="n">'+(storeCombinedCPM(l.location)!=null?'$'+storeCombinedCPM(l.location).toFixed(2):'—')+'</td><td class="n">'+(storeFuel(l.location)!=null?'$'+Number(storeFuel(l.location)).toLocaleString(undefined,{maximumFractionDigits:0}):'—')+'</td></tr>';
+    return'<tr><td><span class="rank '+cls+'">'+(i+1)+'</span></td><td><strong>'+(l.identifier||l.location)+'</strong>'+tags+'</td><td>'+regBadge(l.region)+'</td><td class="n">'+pill(l.avg_util)+'</td><td class="n">'+l.asset_count+'</td><td class="n">'+dd+'</td><td class="n">'+ldur+'</td><td class="n">'+lpctActive+'</td><td class="n">'+wu+'</td><td class="n">'+(lrt?lrt.rst:'—')+'</td><td class="n">'+pct8pill+'</td><td class="n">'+(storeCPD(l.location)!=null?'$'+storeCPD(l.location).toFixed(2):'—')+'</td><td class="n">'+(storeCombinedCPM(l.location)!=null?'$'+storeCombinedCPM(l.location).toFixed(2):'—')+'</td></tr>';
   };
   document.getElementById('top10-body').innerHTML=sorted.slice(0,10).map((l,i)=>mkRow(l,i,i<3?'rank-g':'')).join('');
   document.getElementById('bottom10-body').innerHTML=sorted.slice(-10).reverse().map((l,i)=>mkRow(l,sorted.length-1-i,'rank-r')).join('');
@@ -792,7 +794,7 @@ function renderRegions(){
       '<td class="n">'+(storeCPD(l.location)!=null?'$'+storeCPD(l.location).toFixed(2):'—')+'</td>'+
       '<td class="n">'+(storeFuelCPD(l.location)!=null?'$'+storeFuelCPD(l.location).toFixed(2):'—')+'</td>'+
       '<td class="n">'+(storeCombinedCPD(l.location)!=null?'<strong>$'+storeCombinedCPD(l.location).toFixed(2)+'</strong>':'—')+'</td>'+
-      '<td class="n">'+(storeCombinedCPM(l.location)!=null?'$'+storeCombinedCPM(l.location).toFixed(2):'—')+'</td>'+
+      '<td class="n">'+(storeCombinedCPM(l.location)!=null?(()=>{const cpm=storeCombinedCPM(l.location);const diff=+(cpm-2.38).toFixed(2);const col=diff>0?'var(--rd)':diff<0?'var(--gr)':'inherit';return'<span style="color:'+col+';">$'+cpm.toFixed(2)+(diff!==0?' <small>'+(diff>0?'▲':'▼')+Math.abs(diff)+'</small>':'')+'</span>';})():'—')+'</td>'+
       '<td class="n">'+(storeFuel(l.location)!=null?'$'+Number(storeFuel(l.location)).toLocaleString(undefined,{maximumFractionDigits:0}):'—')+'</td></tr>';
     }).join('');
     return'<div class="reg-card">'+
@@ -804,7 +806,9 @@ function renderRegions(){
             '<span class="r-gyr-pill util-yellow">'+(reg.yellow||0)+' &bull;</span>'+
             '<span class="r-gyr-pill util-red">'+(reg.red||0)+' &#x25BC;</span>'+
           '</div>'+
-          '<div><div class="r-util '+c+'">'+pct+'%</div>'+
+          (RWU.reg[reg.region]!=null?'<div style="text-align:center;min-width:52px;"><div style="font-size:9px;text-transform:uppercase;letter-spacing:.4px;color:var(--gy);font-weight:700;">Wt Util</div><div style="font-size:12px;font-weight:700;color:'+(RWU.reg[reg.region]>=50?'var(--gr)':RWU.reg[reg.region]>=35?'var(--ym)':'var(--rd)')+'">'+RWU.reg[reg.region]+'%</div></div>':'')+
+          (MD.reg[reg.region]!=null?'<div style="text-align:center;min-width:52px;"><div style="font-size:9px;text-transform:uppercase;letter-spacing:.4px;color:var(--gy);font-weight:700;">Mi/Del</div><div style="font-size:12px;font-weight:700;color:var(--bl);">'+MD.reg[reg.region]+' mi</div></div>':'')+
+          '<div style="text-align:center;min-width:52px;"><div style="font-size:9px;text-transform:uppercase;letter-spacing:.4px;color:var(--gy);font-weight:700;">Time Away</div><div style="font-size:12px;font-weight:700;color:'+(c==='util-green'?'var(--gr)':c==='util-yellow'?'var(--ym)':'var(--rd)')+'">'+pct+'%</div>'+
           '<div class="r-bar-bg"><div class="r-bar-fg" style="width:'+Math.min(100,reg.avg_util*100)+'%;background:'+(c==='util-green'?'var(--gr)':c==='util-yellow'?'var(--yl)':'var(--rd)')+'"></div></div></div>'+
           '<span style="font-size:10px;color:#bbb;" id="chev-'+id+'">&#9660;</span>'+
         '</div>'+
@@ -828,9 +832,14 @@ function renderRegions(){
             '<div class="rsb-cell"><div class="rsb-label">% Days Before 7AM</div><div class="rsb-val" style="font-size:17px;color:'+(RT.reg[reg.region].pct8>=75?'var(--gr)':RT.reg[reg.region].pct8>=50?'var(--am)':'var(--rd)')+'">'+RT.reg[reg.region].pct8+'%</div></div>'+
             '<div class="rsb-cell"><div class="rsb-label">Avg Delivery Duration</div><div class="rsb-val" style="font-size:17px;color:var(--bl)">'+(DUR.reg[reg.region]?DUR.reg[reg.region].dur:'—')+'</div></div>'+
             '<div class="rsb-cell"><div class="rsb-label">% Asset Days Active</div><div class="rsb-val" style="font-size:17px;color:var(--bl)">'+(DUR.reg[reg.region]?DUR.reg[reg.region].pct_active+'%':'—')+'</div></div>'+
-            '<div class="rsb-cell"><div class="rsb-label">Avg first geofence exit</div><div class="rsb-val" style="font-size:13px;color:var(--gy);font-weight:400;">Weighted avg by delivery count</div></div>'+
           '</div>':'')+
-        '<div style="overflow-x:auto;"><table><thead><tr><th>Store</th><th class="n">Assets</th><th class="n">Avg Util</th><th class="n">Route Wt Util</th><th class="n">Mi/Delivery</th><th class="n">Avg Daily Del.</th><th class="n">Avg Duration</th><th class="n">% Asset Days Active</th><th class="n">Avg Start</th><th class="n">Before 7AM</th><th class="n">Fleet CPD</th><th class="n">Fuel CPD</th><th class="n">Total CPD</th><th class="n">Fleet Fuel $/Mi</th><th class="n">Fuel Q1</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
+        '<div class="rsb">'+
+          '<div class="rsb-cell"><div class="rsb-label">Total Fleet Charge (Q1)</div><div class="rsb-val" style="color:var(--bl);">$'+(()=>{const s=reg.locs.reduce((t,l)=>t+(storeMo(l.location)||0)*3,0);return Number(s).toLocaleString(undefined,{maximumFractionDigits:0});})()+'</div></div>'+
+          '<div class="rsb-cell"><div class="rsb-label">Total Fuel Cost (Q1)</div><div class="rsb-val" style="color:var(--ym);">$'+(()=>{const s=reg.locs.reduce((t,l)=>t+(storeFuel(l.location)||0),0);return Number(s).toLocaleString(undefined,{maximumFractionDigits:0});})()+'</div></div>'+
+          '<div class="rsb-cell"><div class="rsb-label">Total CPD</div>'+(()=>{const locs=reg.locs;const tot=locs.reduce((t,l)=>t+(storeCombinedCPD(l.location)||0)*(DEL.loc[String(l.location)]||0),0);const del=locs.reduce((t,l)=>t+(DEL.loc[String(l.location)]||0),0);if(!del)return '<div class="rsb-val">—</div>';const cpd=tot/del;const diff=cpd-54.54;const col=diff>0?'var(--rd)':'var(--gr)';const arrow=diff>0?'&#9650;':'&#9660;';return '<div class="rsb-val" style="color:'+col+';">$'+cpd.toFixed(2)+'</div><div style="font-size:10px;color:'+col+';font-weight:700;">'+arrow+' '+(diff>0?'+':'')+diff.toFixed(2)+' vs fleet avg</div>';})()+'</div>'+
+          '<div class="rsb-cell"><div class="rsb-label">Fleet & Fuel $/Mi</div>'+(()=>{const locs=reg.locs;const tot=locs.reduce((t,l)=>t+(storeCombinedCPM(l.location)||0)*(ML.loc[String(l.location)]||0),0);const mi=locs.reduce((t,l)=>t+(ML.loc[String(l.location)]||0),0);if(!mi)return'<div class="rsb-val">—</div>';const cpm=tot/mi;const diff=+(cpm-2.38).toFixed(2);const col=diff>0?'var(--rd)':'var(--gr)';const arrow=diff>0?'&#9650;':'&#9660;';return'<div class="rsb-val" style="color:'+col+';">$'+cpm.toFixed(2)+'</div><div style="font-size:10px;color:'+col+';font-weight:700;">'+arrow+' '+(diff>0?'+':'')+diff+' vs fleet avg</div>';})()+'</div>'+
+        '</div>'+
+        '<div style="overflow-x:auto;"><table><thead><tr><th>Store</th><th class="n">Assets</th><th class="n">Avg Util</th><th class="n">Route Wt Util</th><th class="n">Mi/Delivery</th><th class="n">Avg Daily Del.</th><th class="n">Avg Duration</th><th class="n">% Asset Days Active</th><th class="n">Avg Start</th><th class="n">Before 7AM</th><th class="n">Fleet CPD</th><th class="n">Fuel CPD</th><th class="n">Total CPD</th><th class="n">Fleet & Fuel $/Mi</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
       '</div>'+
     '</div>';
   }).join('');
@@ -868,7 +877,7 @@ function renderRankings(){
       '<td class="n">'+(storeCPD(l.location)!=null?'$'+storeCPD(l.location).toFixed(2):'—')+'</td>'+
       '<td class="n">'+(storeFuelCPD(l.location)!=null?'$'+storeFuelCPD(l.location).toFixed(2):'—')+'</td>'+
       '<td class="n">'+(storeCombinedCPD(l.location)!=null?'<strong>$'+storeCombinedCPD(l.location).toFixed(2)+'</strong>':'—')+'</td>'+
-      '<td class="n">'+(storeCombinedCPM(l.location)!=null?'$'+storeCombinedCPM(l.location).toFixed(2):'—')+'</td>'+
+      '<td class="n">'+(storeCombinedCPM(l.location)!=null?(()=>{const cpm=storeCombinedCPM(l.location);const diff=+(cpm-2.38).toFixed(2);const col=diff>0?'var(--rd)':diff<0?'var(--gr)':'inherit';return'<span style="color:'+col+';">$'+cpm.toFixed(2)+(diff!==0?' <small>'+(diff>0?'▲':'▼')+Math.abs(diff)+'</small>':'')+'</span>';})():'—')+'</td>'+
       '<td class="n">'+(storeFuel(l.location)!=null?'$'+Number(storeFuel(l.location)).toLocaleString(undefined,{maximumFractionDigits:0}):'—')+'</td></tr>';
   };
   document.getElementById('rank-top-body').innerHTML=sorted.slice(0,10).map((l,i)=>mkRow(l,i,i<3?'rank-g':'',i+1)).join('');
@@ -898,7 +907,7 @@ function renderStores(){
     '<td class="n">'+(assetCPD(a.aid)!=null?'$'+assetCPD(a.aid).toFixed(2):'—')+'</td>'+
     '<td class="n">'+(assetFuel(a.aid)!=null&&assetDel(a.aid)>0?'$'+(assetFuel(a.aid)/assetDel(a.aid)).toFixed(2):'—')+'</td>'+
     '<td class="n">'+(assetCPD(a.aid)!=null&&assetFuel(a.aid)!=null&&assetDel(a.aid)>0?'<strong>$'+(assetCPD(a.aid)+assetFuel(a.aid)/assetDel(a.aid)).toFixed(2)+'</strong>':'—')+'</td>'+
-    '<td class="n">'+(storeCombinedCPM(a.loc)!=null?'$'+storeCombinedCPM(a.loc).toFixed(2):'—')+'</td>'+
+    '<td class="n">'+(()=>{const t=assetTag(a.aid);if(!t)return'—';const cp=(COST.asset.mo[t]||0)*3;const fs=FUEL.asset[t]?FUEL.asset[t].spend:0;const mi=ML.asset[t]||0;if(!mi)return'—';const cpm=+((cp+fs)/mi).toFixed(2);const diff=+(cpm-2.38).toFixed(2);const col=diff>0?'var(--rd)':diff<0?'var(--gr)':'inherit';return'<span style="color:'+col+';">$'+cpm.toFixed(2)+(diff!==0?' <small>'+(diff>0?'▲':'▼')+Math.abs(diff)+'</small>':'')+'</span>';})()+'</td>'+
     '<td class="n">'+(art?art.rst:'—')+'</td>'+
     '<td class="n">'+(art?'<span class="pill '+(art.pct8>=75?'util-green':art.pct8>=50?'util-yellow':'util-red')+'">'+art.pct8+'%</span>':'—')+'</td></tr>';}).join('');
     const tags=(isLoaner(l.location)?'<span class="loaner-badge">Regional Loaner</span>':'')+(isCD(l.location)?'<span class="cd-badge">Central Delivery</span>':'');
@@ -906,12 +915,34 @@ function renderStores(){
       '<div class="sch b'+c[5]+'" style="border-left-color:'+(c==='util-green'?'var(--gr)':c==='util-yellow'?'var(--yl)':'var(--rd)')+';" onclick="toggleStore(this.dataset.r)" data-r="'+id+'">'+
         '<div><div class="s-num">'+(l.identifier||l.location)+''+tags+'</div><div class="s-meta">'+regBadge(l.region)+'&nbsp;'+l.asset_count+' asset'+(l.asset_count!==1?'s':'')+(DEL.loc[String(l.location)]?'&nbsp;&bull;&nbsp;'+(DEL.loc[String(l.location)]/63).toFixed(1)+' del/day':'')+(MD.loc[String(l.location)]?'&nbsp;&bull;&nbsp;'+MD.loc[String(l.location)]+' mi/delivery':'')+(DUR.loc[String(l.location)]?'&nbsp;&bull;&nbsp;'+DUR.loc[String(l.location)].dur+' avg delivery &bull; '+DUR.loc[String(l.location)].pct_active+'% asset days active':'')+(RT.loc[String(l.location)]?'&nbsp;&bull;&nbsp;&#9650; '+RT.loc[String(l.location)].rst+'&nbsp;&bull;&nbsp;'+RT.loc[String(l.location)].pct8+'% before 7AM':'')+(storeMo(l.location)?'&nbsp;&bull;&nbsp;$'+Number(storeMo(l.location)).toLocaleString(undefined,{maximumFractionDigits:0})+'/mo fleet':'')+(storeFuelMo(l.location)?'&nbsp;&bull;&nbsp;$'+Number(storeFuelMo(l.location)).toLocaleString(undefined,{maximumFractionDigits:0})+'/mo fuel':'')+'</div></div>'+
         '<div class="s-right">'+
+          (RWU.loc[String(l.location)]!=null?'<div style="text-align:center;min-width:48px;"><div style="font-size:9px;text-transform:uppercase;letter-spacing:.4px;color:var(--gy);font-weight:700;">Wt Util</div><div style="font-size:11px;font-weight:700;color:'+(RWU.loc[String(l.location)]>=50?'var(--gr)':RWU.loc[String(l.location)]>=35?'var(--ym)':'var(--rd)')+'">'+RWU.loc[String(l.location)]+'%</div></div>':'')+
+          (MD.loc[String(l.location)]!=null?'<div style="text-align:center;min-width:48px;"><div style="font-size:9px;text-transform:uppercase;letter-spacing:.4px;color:var(--gy);font-weight:700;">Mi/Del</div><div style="font-size:11px;font-weight:700;color:var(--bl);">'+MD.loc[String(l.location)]+' mi</div></div>':'')+
+          '<div style="text-align:center;min-width:52px;"><div style="font-size:9px;text-transform:uppercase;letter-spacing:.4px;color:var(--gy);font-weight:700;">Time Away</div>'+
           '<div class="s-bar-wrap"><div class="s-bar-bg"><div class="s-bar-fg" style="width:'+Math.min(100,l.avg_util*100)+'%;background:'+(c==='util-green'?'var(--gr)':c==='util-yellow'?'var(--yl)':'var(--rd)')+'"></div></div></div>'+
-          '<div class="s-pct '+c+'">'+pct+'%</div>'+
+          '<div style="font-size:11px;font-weight:700;color:'+(c==='util-green'?'var(--gr)':c==='util-yellow'?'var(--ym)':'var(--rd)')+'">'+pct+'%</div></div>'+
           '<span class="schev" id="schev-'+id+'">&#9660;</span>'+
         '</div>'+
       '</div>'+
-      '<div class="scb" id="'+id+'"><table><thead><tr><th>Asset</th><th>Type</th><th class="n">Days</th><th class="n">Away Hrs</th><th class="n">Util</th><th class="n">Route Wt Util</th><th class="n">Mi/Delivery</th><th class="n">Del/Day</th><th class="n">Avg Duration</th><th class="n">% Asset Days Active</th><th class="n">Miles</th><th class="n">Annual Cost</th><th class="n">Q1 Fuel</th><th class="n">Fleet CPD</th><th class="n">Fuel CPD</th><th class="n">Total CPD</th><th class="n">Fleet Fuel $/Mi</th><th class="n">Avg Start</th><th class="n">Before 7AM</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
+      '<div class="scb" id="'+id+'">'+
+      '<div class="rsb" style="border-bottom:1px solid var(--bd);">'+
+        '<div class="rsb-cell"><div class="rsb-label">Avg Utilization</div><div class="rsb-val '+c+'">'+pct+'%</div></div>'+
+        '<div class="rsb-cell"><div class="rsb-label">Wt Utilization</div><div class="rsb-val" style="color:'+(RWU.loc[String(l.location)]>=50?'var(--gr)':RWU.loc[String(l.location)]>=35?'var(--ym)':'var(--rd)')+'">'+(RWU.loc[String(l.location)]!=null?RWU.loc[String(l.location)]+'%':'—')+'</div></div>'+
+        '<div class="rsb-cell"><div class="rsb-label">Avg Daily Deliveries</div><div class="rsb-val" style="color:var(--bl)">'+(DEL.loc[String(l.location)]!=null?(DEL.loc[String(l.location)]/63).toFixed(1):'—')+'</div></div>'+
+        '<div class="rsb-cell"><div class="rsb-label">Route Efficiency</div><div class="rsb-val" style="color:var(--bl)">'+(MD.loc[String(l.location)]!=null?MD.loc[String(l.location)]:'—')+' mi</div></div>'+
+      '</div>'+
+      '<div class="rsb" style="border-bottom:1px solid var(--bd);">'+
+        '<div class="rsb-cell"><div class="rsb-label">Total Miles</div><div class="rsb-val" style="color:var(--bl)">'+fmtNum(ML.loc[String(l.location)]||0)+'</div></div>'+
+        (RT.loc[String(l.location)]?'<div class="rsb-cell"><div class="rsb-label">&#9650; Avg First Departure</div><div class="rsb-val" style="font-size:17px;">'+RT.loc[String(l.location)].rst+'</div></div>'+
+        '<div class="rsb-cell"><div class="rsb-label">% Days Before 7AM</div><div class="rsb-val" style="font-size:17px;color:'+(RT.loc[String(l.location)].pct8>=75?'var(--gr)':RT.loc[String(l.location)].pct8>=50?'var(--am)':'var(--rd)')+'">'+RT.loc[String(l.location)].pct8+'%</div></div>':'<div class="rsb-cell">—</div><div class="rsb-cell">—</div>')+
+        (DUR.loc[String(l.location)]?'<div class="rsb-cell"><div class="rsb-label">Avg Delivery Duration</div><div class="rsb-val" style="font-size:17px;color:var(--bl)">'+DUR.loc[String(l.location)].dur+'</div></div>':'<div class="rsb-cell">—</div>')+
+      '</div>'+
+      '<div class="rsb" style="border-bottom:1px solid var(--bd);">'+
+        '<div class="rsb-cell"><div class="rsb-label">Total Fleet Charge (Q1)</div><div class="rsb-val" style="color:var(--bl);">$'+Number((storeMo(l.location)||0)*3).toLocaleString(undefined,{maximumFractionDigits:0})+'</div></div>'+
+        '<div class="rsb-cell"><div class="rsb-label">Total Fuel Cost (Q1)</div><div class="rsb-val" style="color:var(--ym);">$'+Number(storeFuel(l.location)||0).toLocaleString(undefined,{maximumFractionDigits:0})+'</div></div>'+
+        (storeCombinedCPD(l.location)!=null?(()=>{const cpd=storeCombinedCPD(l.location);const diff=+(cpd-54.54).toFixed(2);const col=diff>0?'var(--rd)':'var(--gr)';const arrow=diff>0?'&#9650;':'&#9660;';return '<div class="rsb-cell"><div class="rsb-label">Total CPD</div><div class="rsb-val" style="color:'+col+';font-weight:700;">$'+cpd.toFixed(2)+'</div><div style="font-size:10px;color:'+col+';font-weight:700;">'+arrow+' '+(diff>0?'+':'')+diff+' vs fleet avg</div></div>';})():'<div class="rsb-cell"><div class="rsb-label">Total CPD</div><div class="rsb-val">—</div></div>')+
+        (storeCombinedCPM(l.location)!=null?(()=>{const cpm=storeCombinedCPM(l.location);const diff=+(cpm-2.38).toFixed(2);const col=diff>0?'var(--rd)':'var(--gr)';const arrow=diff>0?'&#9650;':'&#9660;';return'<div class="rsb-cell"><div class="rsb-label">Fleet & Fuel $/Mi</div><div class="rsb-val" style="color:'+col+';">$'+cpm.toFixed(2)+'</div><div style="font-size:10px;color:'+col+';font-weight:700;">'+arrow+' '+(diff>0?'+':'')+diff+' vs fleet avg</div></div>';})():'<div class="rsb-cell"><div class="rsb-label">Fleet & Fuel $/Mi</div><div class="rsb-val">—</div></div>')+
+      '</div>'+
+      '<table><thead><tr><th>Asset</th><th>Type</th><th class="n">Days</th><th class="n">Away Hrs</th><th class="n">Util</th><th class="n">Route Wt Util</th><th class="n">Mi/Delivery</th><th class="n">Del/Day</th><th class="n">Avg Duration</th><th class="n">% Asset Days Active</th><th class="n">Miles</th><th class="n">Annual Cost</th><th class="n">Q1 Fuel</th><th class="n">Fleet CPD</th><th class="n">Fuel CPD</th><th class="n">Total CPD</th><th class="n">Fleet & Fuel $/Mi</th><th class="n">Avg Start</th><th class="n">Before 7AM</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
     '</div>';
   }).join('');
 }
@@ -1203,32 +1234,50 @@ function renderCharges(){
   const S=CHARGES.summary;
   const fmtD=v=>v==null?'—':'$'+Number(v).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
   const fmtN=v=>v==null?'—':'$'+Number(v).toLocaleString(undefined,{maximumFractionDigits:0});
+  const fuelTotal=FUEL.fleet.total;
+  const fuelMonthly=FUEL.fleet.monthly;
+  const fuelAnnual=FUEL.fleet.annual;
+  const combinedQ1=S.fleet_total_mo*3+fuelTotal;
+  const combinedAnnual=(S.fleet_total_mo+fuelMonthly)*12;
 
-  // KPI cards
+  // KPI cards — Row 1: Fleet Charges
   document.getElementById('charge-kpis').innerHTML=
     '<div class="kpi b"><div class="kl">Total Fleet Charge (Q1)</div><div class="kv bl">'+fmtN(S.fleet_total_mo*3)+'</div><div class="ks">Fixed + variable &bull; Jan&ndash;Mar 2026 total</div></div>'+
-    '<div class="kpi b"><div class="kl">Annualized P&amp;L Impact</div><div class="kv bl">'+fmtN(S.fleet_annual)+'</div><div class="ks">'+S.asset_count+' assets &bull; '+S.store_count+' locations</div></div>'+
-    '<div class="kpi g"><div class="kl">Fixed Cost</div><div class="kv gr">'+S.fleet_fixed_pct+'%</div><div class="ks">'+fmtN(S.fleet_total_mo*(S.fleet_fixed_pct/100))+'/mo &bull; capacity cost</div></div>'+
-    '<div class="kpi y"><div class="kl">Variable Cost</div><div class="kv yl">'+S.fleet_variable_pct+'%</div><div class="ks">'+fmtN(S.fleet_total_mo*(S.fleet_variable_pct/100))+'/mo &bull; mileage driven</div></div>'+
-    '<div class="kpi d"><div class="kl">Fleet Avg Cost / Delivery</div><div class="kv">'+fmtD(S.fleet_cpd)+'</div><div class="ks">Total charge &divide; total deliveries</div></div>'+
+    '<div class="kpi y"><div class="kl">Total Fuel Cost (Q1)</div><div class="kv yl">'+fmtN(fuelTotal)+'</div><div class="ks">Jan&ndash;Mar 2026 &bull; '+fmtN(fuelAnnual)+' annualized</div></div>'+
+    '<div class="kpi r"><div class="kl">Combined Q1 Total</div><div class="kv rd">'+fmtN(combinedQ1)+'</div><div class="ks">Fleet + fuel &bull; '+fmtN(combinedAnnual)+' annualized</div></div>'+
+    '<div class="kpi b"><div class="kl">Annualized Fleet P&amp;L</div><div class="kv bl">'+fmtN(S.fleet_annual)+'</div><div class="ks">'+S.asset_count+' assets &bull; '+S.store_count+' locations</div></div>'+
+    '<div class="kpi g"><div class="kl">Fixed Cost</div><div class="kv gr">'+((S.fleet_total_mo*3*(S.fleet_fixed_pct/100)/combinedQ1)*100).toFixed(1)+'%</div><div class="ks">'+fmtN(S.fleet_total_mo*(S.fleet_fixed_pct/100))+'/mo &bull; of combined spend</div></div>'+
+    '<div class="kpi d"><div class="kl">Variable Cost</div><div class="kv">'+((S.fleet_total_mo*3*(S.fleet_variable_pct/100)/combinedQ1)*100).toFixed(1)+'%</div><div class="ks">'+fmtN(S.fleet_total_mo*(S.fleet_variable_pct/100))+'/mo &bull; of combined spend</div></div>'+
+    '<div class="kpi y"><div class="kl">Fuel % of Total Cost</div><div class="kv yl">'+((fuelTotal/(S.fleet_total_mo*3+fuelTotal))*100).toFixed(1)+'%</div><div class="ks">Fuel &divide; fleet + fuel combined Q1</div></div>'+
+    '<div class="kpi d"><div class="kl">Combined Cost / Delivery</div><div class="kv">$54.54</div><div class="ks">Fleet + fuel &divide; deliveries</div></div>'+
     '<div class="kpi b"><div class="kl">Total Deliveries</div><div class="kv bl">'+Number(S.fleet_deliveries).toLocaleString()+'</div><div class="ks">Jan&ndash;Mar 2026 &bull; Elite system</div></div>';
 
   document.getElementById('charge-period-label').textContent='Jan–Mar 2026 · 3-month period';
   document.getElementById('charge-breakdown').innerHTML=
-    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'+
+    '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">'+
     '<div style="text-align:center;padding:16px;background:#f8f8f5;border-radius:6px;">'+
       '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gy);margin-bottom:8px;">Fixed Monthly</div>'+
-      '<div style="font-size:28px;font-weight:700;font-family:Oswald,sans-serif;color:var(--gr);">'+fmtN(S.fleet_total_mo*(S.fleet_fixed_pct/100))+'</div>'+
+      '<div style="font-size:24px;font-weight:700;font-family:Oswald,sans-serif;color:var(--gr);">'+fmtN(S.fleet_total_mo*(S.fleet_fixed_pct/100))+'</div>'+
       '<div style="font-size:11px;color:var(--gy);margin-top:4px;">Flat rate &bull; asset count drives this</div>'+
     '</div>'+
     '<div style="text-align:center;padding:16px;background:#f8f8f5;border-radius:6px;">'+
       '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gy);margin-bottom:8px;">Variable Monthly</div>'+
-      '<div style="font-size:28px;font-weight:700;font-family:Oswald,sans-serif;color:var(--bl);">'+fmtN(S.fleet_total_mo*(S.fleet_variable_pct/100))+'</div>'+
+      '<div style="font-size:24px;font-weight:700;font-family:Oswald,sans-serif;color:var(--bl);">'+fmtN(S.fleet_total_mo*(S.fleet_variable_pct/100))+'</div>'+
       '<div style="font-size:11px;color:var(--gy);margin-top:4px;">$0.42/mile &bull; mileage driven</div>'+
+    '</div>'+
+    '<div style="text-align:center;padding:16px;background:#fff8e8;border-radius:6px;">'+
+      '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gy);margin-bottom:8px;">Fuel Monthly Avg</div>'+
+      '<div style="font-size:24px;font-weight:700;font-family:Oswald,sans-serif;color:var(--ym);">'+fmtN(fuelMonthly)+'</div>'+
+      '<div style="font-size:11px;color:var(--gy);margin-top:4px;">'+Number(FUEL.fleet.gallons).toLocaleString(undefined,{maximumFractionDigits:0})+' gallons Q1</div>'+
+    '</div>'+
+    '<div style="text-align:center;padding:16px;background:#fde8e8;border-radius:6px;">'+
+      '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gy);margin-bottom:8px;">Combined Monthly</div>'+
+      '<div style="font-size:24px;font-weight:700;font-family:Oswald,sans-serif;color:var(--rd);">'+fmtN(S.fleet_total_mo+fuelMonthly)+'</div>'+
+      '<div style="font-size:11px;color:var(--gy);margin-top:4px;">Fleet + fuel &bull; '+fmtN(combinedAnnual)+' annualized</div>'+
     '</div>'+
     '</div>'+
     '<div style="margin-top:14px;padding:12px;background:#fff8e8;border-radius:6px;font-size:12px;color:#7a5c00;">'+
-      '<strong>Key insight:</strong> '+S.fleet_fixed_pct+'% of fleet cost is fixed — right-sizing asset count is the primary lever to reduce P&amp;L impact. Every flatbed with TMFL removed saves ~$37,607/year regardless of miles driven.'+
+      '<strong>Key insight:</strong> '+S.fleet_fixed_pct+'% of fleet cost is fixed — right-sizing asset count is the primary lever to reduce P&amp;L impact. Every flatbed with TMFL removed saves ~$37,607/year regardless of miles driven. Fuel adds $'+fuelMonthly.toLocaleString(undefined,{maximumFractionDigits:0})+'/month to the total operating cost.'+
     '</div>';
 
   // Type table
@@ -1245,6 +1294,7 @@ function renderCharges(){
     if(sortKey==='cpd') return (b.cost_per_del||0)-(a.cost_per_del||0);
     if(sortKey==='util') return (a.avg_util||999)-(b.avg_util||999);
     if(sortKey==='store') return parseInt(a.store||0)-parseInt(b.store||0);
+    if(sortKey==='combined'){const ca=(a.annual+(FUEL.store[a.store]?FUEL.store[a.store].annual:0));const cb=(b.annual+(FUEL.store[b.store]?FUEL.store[b.store].annual:0));return cb-ca;}
     return b.annual-a.annual;
   });
   document.getElementById('store-charge-body').innerHTML=sorted.map(s=>{
@@ -1262,8 +1312,11 @@ function renderCharges(){
       '<td class="n" style="color:var(--gy);">$'+Number(s.fixed_period/3).toLocaleString(undefined,{maximumFractionDigits:0})+'</td>'+
       '<td class="n" style="color:var(--bl);">$'+Number(s.variable_period/3).toLocaleString(undefined,{maximumFractionDigits:0})+'</td>'+
       '<td class="n"><strong>$'+Number(s.annual).toLocaleString(undefined,{maximumFractionDigits:0})+'</strong></td>'+
+      '<td class="n" style="color:var(--ym);">$'+(FUEL.store[s.store]?Number(FUEL.store[s.store].total).toLocaleString(undefined,{maximumFractionDigits:0}):'—')+'</td>'+
+      '<td class="n"><strong style="color:var(--rd);">$'+(FUEL.store[s.store]?Number(s.annual+FUEL.store[s.store].annual).toLocaleString(undefined,{maximumFractionDigits:0}):'—')+'</strong></td>'+
       '<td class="n">'+Number(s.deliveries).toLocaleString()+'</td>'+
       '<td class="n" style="'+cpdCol+'">'+(cpd!=null?'$'+cpd.toFixed(2):'—')+'</td>'+
+      '<td class="n">'+(FUEL.store[s.store]&&cpd!=null?(()=>{const fc=FUEL.store[s.store].total;const del=s.deliveries;const combined=cpd+(del>0?fc/del:0);const diff=+(combined-54.54).toFixed(2);const col=diff>0?'color:var(--rd);font-weight:700;':'color:var(--gr);font-weight:700;';return'<span style="'+col+';">$'+combined.toFixed(2)+'</span>';})():'—')+'</td>'+
     '</tr>';
   }).join('');
 }
