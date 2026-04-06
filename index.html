@@ -279,14 +279,14 @@ select:focus,input:focus{outline:none;border-color:var(--gr);}
     <div class="card">
       <div class="ch"><h3>&#x25B2; Top 10 Stores</h3><span class="cnt">Highest Utilization</span></div>
       <div class="cb" style="padding:0;"><div class="tw">
-        <table><thead><tr><th>Rank</th><th>Store</th><th>Region</th><th class="n">Avg Util</th><th class="n">Assets</th><th class="n">Deliveries</th><th class="n">Avg Duration</th><th class="n">% Asset Days Active</th><th class="n">Route Wt Util</th><th class="n">Avg Start</th><th class="n">Before 7AM</th><th class="n">Cost/Del</th><th class="n">Fleet & Fuel $/Mi</th><th class="n">Fuel Q1</th></tr></thead>
+        <table><thead><tr><th>Rank</th><th>Store</th><th>Region</th><th class="n">Avg Util</th><th class="n">Assets</th><th class="n">Deliveries</th><th class="n">Avg Duration</th><th class="n">% Asset Days Active</th><th class="n">Route Wt Util</th><th class="n">Avg Start</th><th class="n">Before 7AM</th><th class="n">Cost/Del</th><th class="n">Fleet & Fuel $/Mi</th></tr></thead>
         <tbody id="top10-body"></tbody></table>
       </div></div>
     </div>
     <div class="card">
       <div class="ch"><h3>&#x25BC; Bottom 10 Stores</h3><span class="cnt">Lowest Utilization</span></div>
       <div class="cb" style="padding:0;"><div class="tw">
-        <table><thead><tr><th>Rank</th><th>Store</th><th>Region</th><th class="n">Avg Util</th><th class="n">Assets</th><th class="n">Deliveries</th><th class="n">Avg Duration</th><th class="n">% Asset Days Active</th><th class="n">Route Wt Util</th><th class="n">Avg Start</th><th class="n">Before 7AM</th><th class="n">Cost/Del</th><th class="n">Fleet & Fuel $/Mi</th><th class="n">Fuel Q1</th></tr></thead>
+        <table><thead><tr><th>Rank</th><th>Store</th><th>Region</th><th class="n">Avg Util</th><th class="n">Assets</th><th class="n">Deliveries</th><th class="n">Avg Duration</th><th class="n">% Asset Days Active</th><th class="n">Route Wt Util</th><th class="n">Avg Start</th><th class="n">Before 7AM</th><th class="n">Cost/Del</th><th class="n">Fleet & Fuel $/Mi</th></tr></thead>
         <tbody id="bottom10-body"></tbody></table>
       </div></div>
     </div>
@@ -349,14 +349,14 @@ select:focus,input:focus{outline:none;border-color:var(--gr);}
     <div class="card">
       <div class="ch"><h3>&#x25B2; Top 10 Store Locations</h3><span class="cnt">Highest Avg Utilization</span></div>
       <div class="cb" style="padding:0;"><div class="tw">
-        <table><thead><tr><th>Rank</th><th>Store</th><th>Region</th><th class="n">Avg Util</th><th class="n">Route Wt Util</th><th class="n">Mi/Delivery</th><th class="n">Avg Daily Del.</th><th class="n">Avg Duration</th><th class="n">% Asset Days Active</th><th class="n">Miles 90d</th><th class="n">Avg Start</th><th class="n">Before 7AM</th><th class="n">Fleet CPD</th><th class="n">Fuel CPD</th><th class="n">Total CPD</th><th class="n">Fleet & Fuel $/Mi</th><th class="n">Fuel Q1</th></tr></thead>
+        <table><thead><tr><th>Rank</th><th>Store</th><th>Region</th><th class="n">Avg Util</th><th class="n">Route Wt Util</th><th class="n">Mi/Delivery</th><th class="n">Avg Daily Del.</th><th class="n">Avg Duration</th><th class="n">% Asset Days Active</th><th class="n">Miles 90d</th><th class="n">Avg Start</th><th class="n">Before 7AM</th><th class="n">Fleet CPD</th><th class="n">Fuel CPD</th><th class="n">Total CPD</th><th class="n">Fleet & Fuel $/Mi</th></tr></thead>
         <tbody id="rank-top-body"></tbody></table>
       </div></div>
     </div>
     <div class="card">
       <div class="ch"><h3>&#x25BC; Bottom 10 Store Locations</h3><span class="cnt">Lowest Avg Utilization</span></div>
       <div class="cb" style="padding:0;"><div class="tw">
-        <table><thead><tr><th>Rank</th><th>Store</th><th>Region</th><th class="n">Avg Util</th><th class="n">Route Wt Util</th><th class="n">Mi/Delivery</th><th class="n">Avg Daily Del.</th><th class="n">Avg Duration</th><th class="n">% Asset Days Active</th><th class="n">Miles 90d</th><th class="n">Avg Start</th><th class="n">Before 7AM</th><th class="n">Fleet CPD</th><th class="n">Fuel CPD</th><th class="n">Total CPD</th><th class="n">Fleet & Fuel $/Mi</th><th class="n">Fuel Q1</th></tr></thead>
+        <table><thead><tr><th>Rank</th><th>Store</th><th>Region</th><th class="n">Avg Util</th><th class="n">Route Wt Util</th><th class="n">Mi/Delivery</th><th class="n">Avg Daily Del.</th><th class="n">Avg Duration</th><th class="n">% Asset Days Active</th><th class="n">Miles 90d</th><th class="n">Avg Start</th><th class="n">Before 7AM</th><th class="n">Fleet CPD</th><th class="n">Fuel CPD</th><th class="n">Total CPD</th><th class="n">Fleet & Fuel $/Mi</th></tr></thead>
         <tbody id="rank-bot-body"></tbody></table>
       </div></div>
     </div>
@@ -877,7 +877,7 @@ function renderRankings(){
       '<td class="n">'+(storeFuelCPD(l.location)!=null?'$'+storeFuelCPD(l.location).toFixed(2):'—')+'</td>'+
       '<td class="n">'+(storeCombinedCPD(l.location)!=null?'<strong>$'+storeCombinedCPD(l.location).toFixed(2)+'</strong>':'—')+'</td>'+
       '<td class="n">'+(storeCombinedCPM(l.location)!=null?(()=>{const cpm=storeCombinedCPM(l.location);const diff=+(cpm-2.38).toFixed(2);const col=diff>0?'var(--rd)':diff<0?'var(--gr)':'inherit';return'<span style="color:'+col+';">$'+cpm.toFixed(2)+(diff!==0?' <small>'+(diff>0?'▲':'▼')+Math.abs(diff)+'</small>':'')+'</span>';})():'—')+'</td>'+
-      '<td class="n">'+(storeFuel(l.location)!=null?'$'+Number(storeFuel(l.location)).toLocaleString(undefined,{maximumFractionDigits:0}):'—')+'</td></tr>';
+      +'</td></tr>';
   };
   document.getElementById('rank-top-body').innerHTML=sorted.slice(0,10).map((l,i)=>mkRow(l,i,i<3?'rank-g':'',i+1)).join('');
   document.getElementById('rank-bot-body').innerHTML=sorted.slice(-10).reverse().map((l,i)=>mkRow(l,i,'rank-r',total-i)).join('');
