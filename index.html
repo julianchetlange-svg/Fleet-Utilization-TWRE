@@ -120,6 +120,7 @@ tbody tr:hover td{background:var(--grp);}
 .util-gray{background:#f0f0f0;color:var(--gl);}
 .reg-badge{display:inline-block;padding:2px 7px;border-radius:3px;font-size:10px;font-weight:700;background:var(--grl);color:var(--gr);letter-spacing:.3px;}
 .insuf-badge{display:inline-block;padding:2px 7px;border-radius:3px;font-size:10px;font-weight:700;background:#888;color:#fff;margin-left:5px;letter-spacing:.3px;}
+.store-assigned-badge{display:inline-block;padding:2px 7px;border-radius:3px;font-size:10px;font-weight:700;background:#F5C400;color:#1B3A00;margin-left:5px;letter-spacing:.3px;}
 .loaner-badge{display:inline-block;padding:2px 7px;border-radius:3px;font-size:10px;font-weight:700;background:var(--blb);color:var(--bl);margin-left:5px;}
 .cd-badge{display:inline-block;padding:2px 7px;border-radius:3px;font-size:10px;font-weight:700;background:#fff3cd;color:var(--yd);margin-left:5px;}
 .badge-up{background:var(--grl);color:var(--gr);}
@@ -557,6 +558,13 @@ function delta(v,sign){
   return'<span class="pill '+c+'">'+(v>=0&&sign?'+':'')+v.toFixed(1)+'%</span>';
 }
 function fmtNum(v,d=0){if(v==null||isNaN(v))return'—';return Number(v).toLocaleString(undefined,{minimumFractionDigits:d,maximumFractionDigits:d});}
+function isStoreAssignedLoaner(aid){
+  if(!aid||aid.toLowerCase().indexOf('loaner')===-1)return false;
+  var parts=aid.split('-');
+  if(!parts.length)return false;
+  var first=parseInt(parts[0]);
+  return !isNaN(first)&&!(first>=761&&first<=768);
+}
 function isLoaner(loc){try{const n=parseInt(String(loc).replace('CD',''));return n>=761&&n<=768;}catch{return false;}}
 function isCD(loc){return String(loc)==='355CD';}
 function regBadge(r){return r?'<span class="reg-badge">'+r+'</span>':'';}
@@ -901,7 +909,7 @@ function renderStores(){
   document.getElementById('store-grid').innerHTML=filtered.map(l=>{
     const c=uCls(l.avg_util),pct=(l.avg_util*100).toFixed(1),id='loc-'+l.location;
     const storeAssets=(RD.assetsByLoc[String(l.location)]||[]);
-    const rows=storeAssets.map(a=>{const art=assetRT(a.aid);const adurObj=assetDur(a.aid);const adur=adurObj?adurObj.dur:'—';const apctActive=adurObj?adurObj.pct_active+'%':'—';return'<tr><td>'+a.aid+'</td><td>'+a.type+'</td><td class="n">'+a.days+'</td><td class="n">'+a.away.toFixed(2)+'</td><td class="n">'+pill(a.util)+'</td><td class="n">'+(assetRWU(a.aid)!=null?'<span class="pill '+(assetRWU(a.aid)>=50?'util-green':assetRWU(a.aid)>=35?'util-yellow':'util-red')+'">'+assetRWU(a.aid)+'%</span>':'—')+'</td><td class="n">'+(assetMD(a.aid)!=null?assetMD(a.aid)+' mi':'—')+'</td><td class="n">'+(assetDel(a.aid)!=null?(assetDel(a.aid)/85).toFixed(1):'—')+'</td><td class="n">'+adur+'</td><td class="n">'+apctActive+'</td><td class="n">'+fmtNum(assetMiles(a.aid)!=null?assetMiles(a.aid):0)+'</td>'+
+    const rows=storeAssets.map(a=>{const art=assetRT(a.aid);const adurObj=assetDur(a.aid);const adur=adurObj?adurObj.dur:'—';const apctActive=adurObj?adurObj.pct_active+'%':'—';return'<tr><td>'+a.aid+(isStoreAssignedLoaner(a.aid)?'<span class="store-assigned-badge">Store Assigned</span>':'')+'</td><td>'+a.type+'</td><td class="n">'+a.days+'</td><td class="n">'+a.away.toFixed(2)+'</td><td class="n">'+pill(a.util)+'</td><td class="n">'+(assetRWU(a.aid)!=null?'<span class="pill '+(assetRWU(a.aid)>=50?'util-green':assetRWU(a.aid)>=35?'util-yellow':'util-red')+'">'+assetRWU(a.aid)+'%</span>':'—')+'</td><td class="n">'+(assetMD(a.aid)!=null?assetMD(a.aid)+' mi':'—')+'</td><td class="n">'+(assetDel(a.aid)!=null?(assetDel(a.aid)/85).toFixed(1):'—')+'</td><td class="n">'+adur+'</td><td class="n">'+apctActive+'</td><td class="n">'+fmtNum(assetMiles(a.aid)!=null?assetMiles(a.aid):0)+'</td>'+
     '<td class="n">'+(assetCPD(a.aid)!=null?'$'+assetCPD(a.aid).toFixed(2):'—')+'</td>'+
     '<td class="n">'+(assetFuel(a.aid)!=null&&assetDel(a.aid)>0?'$'+(assetFuel(a.aid)/assetDel(a.aid)).toFixed(2):'—')+'</td>'+
     '<td class="n">'+(assetCPD(a.aid)!=null&&assetFuel(a.aid)!=null&&assetDel(a.aid)>0?'<strong>$'+(assetCPD(a.aid)+assetFuel(a.aid)/assetDel(a.aid)).toFixed(2)+'</strong>':'—')+'</td>'+
