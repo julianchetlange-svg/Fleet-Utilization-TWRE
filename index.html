@@ -1636,18 +1636,52 @@ function updWhatIf(){
     '<div class="kpi '+(addCount>0?'r':'d')+'"><div class="kl">Add</div><div class="kv '+(addCount>0?'rd':'')+'">'+addCount+'<span style="font-size:14px;font-weight:400;"> assets</span></div><div class="ks">'+(addCount>0?'Needed beyond current fleet + pool':'None needed at this scenario')+'</div></div>'+
     '<div class="kpi '+(projFleetUtil>=40?'g':projFleetUtil>=35?'y':'r')+'"><div class="kl">Projected Fleet Time Away Util</div><div class="kv '+(projFleetUtil>=40?'gr':projFleetUtil>=35?'yl':'rd')+'">'+projFleetUtil.toFixed(1)+'%</div><div class="ks">vs. 40% goal &middot; '+projAssetCount+' assets in fleet at this scenario</div></div>';
 
-  // ---- Benchmark chart (simple bar comparison) ----
+// Top 10 stores by deliveries/asset (Jan-May 2026 actual), computed live from real store data —
+// NOT the same "top 10" as the 35.5% Time Away figure elsewhere, which ranks stores by utilization, not delivery density.
+function computeTop10StoreBenchmark(){
+  const locName={}, locUtil={}, storeAssetCount={};
+  RD.locs.forEach(l=>{ locName[String(l.location)]=l.identifier||String(l.location); locUtil[String(l.location)]=l.avg_util; });
+  RD.assets.forEach(a=>{ storeAssetCount[a.loc]=(storeAssetCount[a.loc]||0)+1; });
+  const regionalCodes=new Set(['761','762','763','764','765','766','767','768']);
+  const rows=[];
+  Object.keys(DEL.loc||{}).forEach(locStr=>{
+    if(regionalCodes.has(locStr))return;
+    const assets=storeAssetCount[+locStr]||0;
+    if(assets===0)return;
+    const del=DEL.loc[locStr];
+    rows.push({loc:locStr,del,assets,dpa:del/assets});
+  });
+  rows.sort((a,b)=>b.dpa-a.dpa);
+  const top10=rows.slice(0,10);
+  const totalDel=top10.reduce((s,r)=>s+r.del,0);
+  const totalAssets=top10.reduce((s,r)=>s+r.assets,0);
+  const avgUtil=top10.reduce((s,r)=>s+(locUtil[r.loc]||0),0)/top10.length;
+  const density=(totalDel/totalAssets)/5*12;
+  const currentAnnualDel=WHATIF.meta.current_deliveries_ytd/5*12; // fleet-wide, at today's actual pace (not a growth scenario)
+  return{
+    density,
+    fleet:totalAssets/10,
+    hypotheticalFleet:currentAnnualDel/density, // fleet size needed to cover today's total volume AT the top-10's efficiency
+    annualDel:(totalDel/5*12),
+    ta:avgUtil*100,
+    stores:top10.map(r=>locName[r.loc])
+  };
+}
+
+
   const fleetByYr=WHATIF.meta.historical_benchmarks.avg_fleet_by_year||{};
   const postRemovalFleet=WHATIF.meta.current_fleet_size-removeCount;
   const postRemovalDensity=(projDel/5*12)/postRemovalFleet;
   const utilProjNone=computeFleetUtil(pct,'none');
   const utilProjMode=computeFleetUtil(pct,reallocMode);
+  const top10=computeTop10StoreBenchmark();
   const benchYears=[
     {label:'2022',val:WHATIF.meta.historical_benchmarks['2022_density'],fleet:fleetByYr['2022'],ta:HD.fa['2022']},
     {label:'2023',val:WHATIF.meta.historical_benchmarks['2023_density'],fleet:fleetByYr['2023'],ta:HD.fa['2023']},
     {label:'2024',val:WHATIF.meta.historical_benchmarks['2024_density'],fleet:fleetByYr['2024'],ta:HD.fa['2024']},
     {label:"2025",val:WHATIF.meta.historical_benchmarks['2025_density_est'],fleet:fleetByYr['2025'],ta:HD.fa['2025']},
     {label:'2026 Current',val:cur.annualized_density,fleet:fleetByYr['2026_weighted'],ta:HD.fa['2026']},
+    {label:'Top 10 Stores (by Del/Asset)',val:top10.density,fleet:top10.fleet,ta:top10.ta,annualDelOverride:top10.annualDel,topStores:true,hypotheticalFleet:top10.hypotheticalFleet},
     {label:'Scenario (fleet held flat)',val:projDensity,fleet:WHATIF.meta.current_fleet_size,ta:utilProjNone.fleet_util}
   ];
   if(removeCount>0){
@@ -1667,14 +1701,17 @@ function updWhatIf(){
       const w=(b.val/maxVal*100).toFixed(1);
       const isScenario=b.label.indexOf('Scenario')===0;
       const overCeiling=b.val>870.6;
-      const col=b.highlight?(overCeiling?'var(--rd)':'#7b4fb0'):(isScenario?'var(--bl)':(b.label==='2026 Current'?'var(--ym)':'var(--gy)'));
-      const annDel=isScenario?Math.round(projDel/5*12).toLocaleString():
+      const col=b.highlight?(overCeiling?'var(--rd)':'#7b4fb0'):b.topStores?'#1a8754':(isScenario?'var(--bl)':(b.label==='2026 Current'?'var(--ym)':'var(--gy)'));
+      const annDel=b.annualDelOverride!=null?Math.round(b.annualDelOverride).toLocaleString():
+        isScenario?Math.round(projDel/5*12).toLocaleString():
         b.label==='2026 Current'?M.historical_benchmarks['2026_ytd_deliveries'].toLocaleString()+'* YTD':
         (M.historical_benchmarks.annual_deliveries[b.label]||'').toLocaleString();
-      const fleetAvg=b.fleet!=null?b.fleet.toFixed(1):'&mdash;';
+      const fleetAvg=b.topStores?
+        '<span style="font-weight:800;text-decoration:underline;">'+b.hypotheticalFleet.toFixed(1)+'</span> '+tip('<span style="display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;background:#1a8754;color:#fff;font-size:10px;font-weight:800;line-height:1;">?</span>','If all 89 stores matched the top 10\u2019s delivery density, today\u2019s annualized volume ('+Math.round(WHATIF.meta.current_deliveries_ytd/5*12).toLocaleString()+' deliveries) could be handled by roughly '+Math.round(b.hypotheticalFleet)+' assets instead of the current 417.8 \u2014 illustrative only, not a literal recommendation, since top-10 stores likely benefit from market/location factors that don\u2019t transfer everywhere.'):
+        b.fleet!=null?b.fleet.toFixed(1):'&mdash;';
       const taVal=b.ta!=null?b.ta.toFixed(1)+'%':'&mdash;';
       return '<div style="display:flex;align-items:center;gap:8px;">'+
-        '<div style="width:150px;font-size:11px;font-weight:'+(isScenario?'700':'500')+';color:'+(b.highlight?col:(isScenario?'var(--bl)':'#444'))+';">'+b.label+(b.highlight?' &#9888;':'')+'</div>'+
+        '<div style="width:150px;font-size:11px;font-weight:'+(isScenario||b.topStores?'700':'500')+';color:'+(b.highlight?col:b.topStores?col:(isScenario?'var(--bl)':'#444'))+';">'+b.label+(b.highlight?' &#9888;':'')+'</div>'+
         '<div style="flex:1;background:#f0f0f0;border-radius:3px;height:18px;position:relative;">'+
         '<div style="width:'+w+'%;background:'+col+';height:100%;border-radius:3px;"></div></div>'+
         '<div style="width:42px;text-align:right;font-size:11px;font-weight:700;">'+Math.round(b.val)+'</div>'+
@@ -1688,7 +1725,7 @@ function updWhatIf(){
     '<strong>Context:</strong> 2026 is currently running at '+Math.round(M.historical_benchmarks.current_density)+'/asset/yr &mdash; already '+
     Math.round((1-M.historical_benchmarks.current_density/M.historical_benchmarks['2022_density'])*100)+'% below the 2022 proven ceiling ('+M.historical_benchmarks['2022_density']+'/asset). '+
     'The growth tiers shown are measured from the current 2026 pace, not from the ceiling. '+
-    'The fleet has ~'+Math.round((M.historical_benchmarks['2022_density']/M.historical_benchmarks.current_density-1)*1000)/10+'% headroom before reaching proven capacity on a flat fleet &mdash; removing assets narrows that gap further, which is what the &#9888; post-removal row above shows.</p></div>';
+    'The fleet has ~'+Math.round((M.historical_benchmarks['2022_density']/M.historical_benchmarks.current_density-1)*1000)/10+'% headroom before reaching proven capacity on a flat fleet &mdash; removing assets narrows that gap further, which is what the &#9888; post-removal row above shows. The green Top 10 Stores row ranks by delivery density (Jan&ndash;May actual) &mdash; a different ranking than the 35.5% Time Away figure used for the Track 1 removal threshold elsewhere, which ranks stores by utilization instead.</p></div>';
 
   // ---- Fleet utilization trend chart across all 7 tiers, for the currently selected mode ----
   const modeLabels={none:'Off (growth only)',move:'Move to hot stores',remove:'Remove all (growth-agnostic)',blend:'Blend (move what growth needs)'};
