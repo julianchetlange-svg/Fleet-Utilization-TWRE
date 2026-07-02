@@ -384,34 +384,31 @@ select:focus,input:focus{outline:none;border-color:var(--gr);}
     <div class="ch"><h3>&#128302; Growth &amp; Reallocation What-If</h3><span class="cnt">Conservative, evidence-bounded model</span></div>
     <div class="cb">
       <p style="margin:0 0 12px;color:var(--gy);font-size:13px;line-height:1.5;">
-        Models the combined effect of delivery volume growth and asset reallocation from underused ("cold") stores to stores closer to utilization goals ("hot" stores). Mi/delivery and cost/delivery improvements are bounded by what this fleet has actually demonstrated historically, not speculative extrapolation. See methodology notes at the bottom of this tab.
+        Models the combined effect of delivery volume growth and asset reallocation from underused ("cold") stores to stores closer to utilization goals ("hot" stores). Mi/delivery and cost/delivery improvements are bounded by what this fleet has actually demonstrated historically, not speculative extrapolation.
       </p>
       <div class="ctrl-row" style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
         <span class="ctrl-label">Growth Scenario:</span>
-        <input type="range" id="wi-slider" min="-10" max="20" step="5" value="0" style="width:260px;" oninput="updWhatIf()">
+        <input type="range" id="wi-slider" min="-10" max="20" step="1" value="0" style="width:260px;" oninput="updWhatIf()">
         <span id="wi-slider-label" style="font-weight:700;font-family:'Oswald',sans-serif;font-size:16px;color:var(--bl);min-width:60px;">0%</span>
-        <span class="ctrl-label" style="margin-left:14px;">Reallocation:</span>
-        <select id="wi-realloc" onchange="updWhatIf()">
-          <option value="none">Off (growth only, no reallocation)</option>
-          <option value="move">Move to hot stores (no fixed-cost change)</option>
-          <option value="remove">Remove all (growth-agnostic fixed-cost reduction)</option>
-          <option value="blend" selected>Blend: move what growth needs, eliminate the rest</option>
-        </select>
+        <span style="font-weight:600;color:var(--bl);margin-left:14px;">Blend: move what growth needs, eliminate the rest</span>
       </div>
     </div>
   </div>
 
   <div class="kpi-row" id="wi-kpis"></div>
 
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
-    <div class="card">
-      <div class="ch"><h3>Deliveries-Per-Asset vs. Historical Benchmark</h3><span class="cnt">Annualized &middot; Trucks + Pickups</span></div>
-      <div class="cb" id="wi-benchmark-chart"></div>
-    </div>
-    <div class="card">
-      <div class="ch"><h3>Cost &amp; Efficiency Projection</h3><span class="cnt" id="wi-period-label"></span></div>
-      <div class="cb" id="wi-cost-table"></div>
-    </div>
+  <p style="margin:0 0 16px;font-size:12px;color:var(--gy);line-height:1.6;padding:10px 14px;background:#f8f8f8;border-radius:4px;border-left:3px solid var(--gy);">
+    Assets under 20% utilization are flagged for reallocation, with a 36% post-removal store cap, subject to: Store-to-Door Pickups are never removed. Every store keeps a minimum of 1 Pickup, 1 20' Slide, and 1 24' TA Flatbed or Tractor TA. The five stores near 355CD shift fully to central delivery &mdash; their core delivery assets are reallocated to 355CD, reallocate to a hot store, or removed from the fleet.
+  </p>
+
+  <div class="card" style="margin-bottom:16px;">
+    <div class="ch"><h3>Deliveries-Per-Asset vs. Historical Benchmark</h3><span class="cnt">Annualized &middot; Trucks + Pickups</span></div>
+    <div class="cb" id="wi-benchmark-chart"></div>
+  </div>
+
+  <div class="card" style="margin-bottom:16px;">
+    <div class="ch"><h3>Cost &amp; Efficiency Projection with Asset Removal/Reallocation</h3><span class="cnt" id="wi-period-label"></span></div>
+    <div class="cb" id="wi-cost-table"></div>
   </div>
 
   <div class="card" style="margin-bottom:16px;">
@@ -419,25 +416,9 @@ select:focus,input:focus{outline:none;border-color:var(--gr);}
     <div class="cb" id="wi-util-trend-chart"></div>
   </div>
 
-  <div class="card" style="margin-bottom:16px;">
-    <div class="ch"><h3>&#9735; Reallocation Pool &mdash; Unified Asset Action Plan</h3><span class="cnt">Region 05 stores prioritized for 355CD &middot; available for hot stores if not needed</span></div>
-    <div class="cb" id="wi-unified-pool"></div>
-  </div>
-
-  <div class="card" style="margin-bottom:16px;" id="wi-pool-growth-card">
-    <div class="ch"><h3>&#128200; Pool Growth Under Decline</h3><span class="cnt">Assets newly crossing below the 20% surplus threshold</span></div>
-    <div class="cb" id="wi-pool-growth"></div>
-  </div>
-
-  <div class="card" style="margin-bottom:16px;">
-    <div class="ch"><h3>&#128293; Hot Store Candidates</h3><span class="cnt">Closest to 40% Time Away / 50% Weight Util goals</span></div>
-    <div class="cb" id="wi-hotstores"></div>
-  </div>
-
-  <div class="card">
-    <div class="ch"><h3>Methodology &amp; Flags</h3></div>
-    <div class="cb" id="wi-methodology"></div>
-  </div>
+  <p style="margin:0 0 16px;font-size:11px;color:var(--gy);line-height:1.6;">
+    <strong>Methodology:</strong> Density/cost figures use trucks+pickups, quarterly-averaged fleet counts. Ceiling = 2022 (870.6/asset), the best year on record. Mi/delivery improvement capped at 1.9%, the largest gap this fleet has actually closed. Track 1 surplus = individual util &lt;20% with a 36% post-removal store cap; Track 2 = Region 05 stores routed through 355CD. Core assets are retained for capacity before being removed whenever there's a shortfall.
+  </p>
 </div>
 
 <!-- ===================== REGIONS ===================== -->
@@ -1405,13 +1386,147 @@ function renderWhatIf(){
   updWhatIf();
 }
 
+// ---- Live growth-tier math (supports any integer % from -10 to +20, not just multiples of 5) ----
+function computeGrowthTier(pct){
+  const M=WHATIF.meta;
+  const NEW_CEILING=870.6;
+  const baseDensity=(M.current_deliveries_ytd/5*12)/M.current_fleet_size;
+  const projDelYtd=M.current_deliveries_ytd*(1+pct/100);
+  const density=(projDelYtd/5*12)/M.current_fleet_size;
+  let credit=1.9*(density-baseDensity)/(NEW_CEILING-baseDensity);
+  credit=Math.max(0,Math.min(1.9,credit));
+  credit=Math.round(credit*100)/100;
+  const miDel=Math.round(M.current_mi_del*(1-credit/100)*100)/100;
+  const projMiles=projDelYtd*miDel;
+  const cost5mo=M.fixed_cost_5mo+projMiles*(M.variable_rate_per_mile+M.fuel_rate_per_mile);
+  const cpd=Math.round((cost5mo/projDelYtd)*100)/100;
+  const baseCpd=WHATIF.growth_tiers.current.cpd;
+  const cpdChange=Math.round((cpd/baseCpd-1)*1000)/10;
+  const t1Move=density>NEW_CEILING?4:0;
+  const t1Remove=density>NEW_CEILING?10:14;
+  let t2Move=Math.round(4+pct/5);
+  t2Move=Math.max(0,Math.min(8,t2Move));
+  const t2Remove=8-t2Move;
+  let shortfall=0;
+  if(density>NEW_CEILING){
+    const exceedPct=density/NEW_CEILING-1;
+    shortfall=Math.round(exceedPct/0.082*30);
+  }
+  return{pct,deliveries_ytd:Math.round(projDelYtd),annualized_density:Math.round(density),mi_del:miDel,
+    mi_del_improvement_pct:credit,combined_cpd:cpd,cpd_change_pct:cpdChange,
+    track1_move:t1Move,track1_remove:t1Remove,track2_move:t2Move,track2_remove:t2Remove,shortfall_trucks:shortfall};
+}
+
+// Live version of "which fleet-wide-surplus-adjacent assets newly cross <20% util under a volume decline"
+function computeGrowthExtra(pct){
+  if(pct>=0) return{list:[],fixedMo:0};
+  const factor=1+pct/100;
+  const poolTags=new Set([
+    ...WHATIF.track1_utilization.assets.map(a=>a.tag),
+    ...WHATIF.track2_cd_coverage.assets.map(a=>a.tag)
+  ]);
+  const list=[];
+  let fixedMo=0;
+  RD.assets.forEach(a=>{
+    if(poolTags.has(a.tag))return;
+    if(a.type==='Pickup')return;
+    if(a.type==='Tractor SA'&&(a.loc===42||a.loc===75))return;
+    if(a.loc===121)return;
+    if(a.aid&&a.aid.indexOf('LOANER')>=0)return;
+    if(a.is_new)return;
+    if(a.util>=0.20&&a.util*factor<0.20){
+      list.push({tag:a.tag,type:a.type,store:(typeof locToName!=='undefined'&&locToName[String(a.loc)])||String(a.loc),
+        current_util:Math.round(a.util*1000)/10,projected_util:Math.round(a.util*factor*1000)/10});
+      fixedMo+=(COST.asset.mo[a.tag]||0);
+    }
+  });
+  list.sort((x,y)=>x.current_util-y.current_util);
+  return{list,fixedMo};
+}
+
+// Live 355CD projection (linear extrapolation of the same trend the original 5%-step data followed)
+function computeCdProjection(pct){
+  const t2Move=Math.max(0,Math.min(8,Math.round(4+pct/5)));
+  const util=Math.round((39.4-0.06*pct)*10)/10;
+  const assets=Math.round(17+pct/5);
+  return{util,assets,to_355cd:t2Move,eliminated:8-t2Move};
+}
+
+
+// Single source of truth for remove/reallocate counts, INCLUDING the core-asset-retention
+// adjustment (never remove a relocatable core asset while the fleet has a capacity shortfall).
+// Both the KPI cards and the Time Away utilization calc call this, so they can't drift apart.
+const CORE_TYPES=new Set(["20' Slide Flatbed","24' TA Flatbed","Tractor TA"]);
+function computeReallocationCounts(pct){
+  const tier=computeGrowthTier(pct);
+  const growthExtra=computeGrowthExtra(pct);
+  const isBaseline=(pct===0);
+  const t1AssetCount=WHATIF.track1_utilization.assets.length;
+  const t2AssetCount=WHATIF.track2_cd_coverage.assets.length;
+  const blendMove=isBaseline?0:tier.track1_move;
+  const t2MoveNow=tier.track2_move;
+  const t2RemoveNow=t2AssetCount-t2MoveNow;
+  let shortfallTrucks=isBaseline?0:tier.shortfall_trucks;
+
+  const specialtyFromT1=10;
+  const coreFromT1=tier.track1_remove-specialtyFromT1;
+  let specialtyFromGE=0,coreFromGE=0;
+  growthExtra.list.forEach(a=>{ if(CORE_TYPES.has(a.type))coreFromGE++; else specialtyFromGE++; });
+  const specialtyRemoveCount=specialtyFromT1+specialtyFromGE;
+  let coreRemoveCount=coreFromT1+t2RemoveNow+coreFromGE;
+
+  let coreRetainedForCapacity=0;
+  if(shortfallTrucks>0&&coreRemoveCount>0){
+    coreRetainedForCapacity=Math.min(coreRemoveCount,shortfallTrucks);
+    coreRemoveCount-=coreRetainedForCapacity;
+    shortfallTrucks-=coreRetainedForCapacity;
+  }
+
+  const removeCount=coreRemoveCount+specialtyRemoveCount;
+  const reallocateCount=blendMove+t2MoveNow+coreRetainedForCapacity;
+  const totalPool=t1AssetCount+t2AssetCount+growthExtra.list.length;
+
+  return{tier,growthExtra,t1AssetCount,t2AssetCount,blendMove,t2MoveNow,t2RemoveNow,
+    shortfallTrucks,coreRemoveCount,specialtyRemoveCount,coreRetainedForCapacity,
+    removeCount,reallocateCount,totalPool};
+}
+
+// Live Time Away utilization projection for any pct/mode (replaces static 5%-step table, which
+// also had a stale Blend-mode tipping point from before the ceiling moved to +10%)
+function computeFleetUtil(pct,mode){
+  const base=WHATIF.fleet_util_projections['0'].none.fleet_util;
+  const moveMult=WHATIF.fleet_util_projections['0'].move.fleet_util/base;
+  const removeMult=WHATIF.fleet_util_projections['0'].remove.fleet_util/base;
+  // Use the SAME current-fleet-size basis (417.8, trucks+pickups weighted avg) as the rest of the
+  // model, not the older static 411/389 table — those predate the quarterly-count methodology
+  // and would silently disagree with the "Avg Fleet" figures shown in the benchmark chart.
+  const poolSize=WHATIF.track1_utilization.assets.length+WHATIF.track2_cd_coverage.assets.length; // 22
+  const noneAssetCount=WHATIF.meta.current_fleet_size;
+  const removeAssetCount=noneAssetCount-poolSize;
+  const noneUtil=base*(1+pct/100);
+  const moveUtil=noneUtil*moveMult;
+  const removeUtil=noneUtil*removeMult;
+  if(mode==='none')return{fleet_util:Math.round(noneUtil*100)/100,asset_count:noneAssetCount};
+  if(mode==='move')return{fleet_util:Math.round(moveUtil*100)/100,asset_count:noneAssetCount};
+  if(mode==='remove')return{fleet_util:Math.round(removeUtil*100)/100,asset_count:removeAssetCount};
+  // blend: weight between none and remove by the actual fraction of the pool eliminated at this tier
+  // (uses the SAME core-retention-adjusted counts as the KPI cards, via computeReallocationCounts)
+  const rc=computeReallocationCounts(pct);
+  const eliminated=rc.removeCount;
+  const moved=rc.reallocateCount;
+  const frac=(eliminated+moved)>0?eliminated/(eliminated+moved):0;
+  const blendUtil=noneUtil+frac*(removeUtil-noneUtil);
+  const blendAssetCount=noneAssetCount-eliminated;
+  return{fleet_util:Math.round(blendUtil*100)/100,asset_count:blendAssetCount};
+}
+
 function updWhatIf(){
   const pct=+document.getElementById('wi-slider').value;
   const pctLabel=pct>=0?('+'+pct):String(pct);
-  const reallocMode=document.getElementById('wi-realloc').value;
+  const reallocMode='blend';
   document.getElementById('wi-slider-label').textContent=pctLabel+'%';
 
-  const tier=WHATIF.growth_tiers.tiers.find(t=>t.pct===pct)||WHATIF.growth_tiers.current;
+  const tier=computeGrowthTier(pct);
   const cur=WHATIF.growth_tiers.current;
   const isBaseline=(pct===0);
 
@@ -1419,7 +1534,7 @@ function updWhatIf(){
   const M=WHATIF.meta;
   const projDel=M.current_deliveries_ytd*(1+pct/100);
   const miDelImprovement=isBaseline?0:tier.mi_del_improvement_pct;
-  const projMiDel=M.current_mi_del*(1-miDelImprovement/100);
+  const projMiDel=Math.round(M.current_mi_del*(1-miDelImprovement/100)*100)/100; // round once, use everywhere downstream — so the displayed figure and the cost math never diverge by a cent
   const projMiles=projDel*projMiDel;
   const projDensity=Math.round(projDel/5*12/WHATIF.meta.current_fleet_size);
 
@@ -1428,17 +1543,35 @@ function updWhatIf(){
   // "remove" is growth-agnostic: ALL 27 pool assets eliminated regardless of tier (the more aggressive scenario).
   // Track 2 (355CD, 12 assets) is fixed/growth-independent in both modes, per the standing policy case.
   // At negative growth, additional assets cross below the 20% Track 1 threshold as volume declines proportionally
-  // (see WHATIF.pool_growth_negative) — these join the eliminate list with their own precise fixed-cost lookup.
-  const growthExtraList=pct<0?((WHATIF.pool_growth_negative||{}).by_tier||{})[String(pct)]||[]:[];
+  // (computed live for any pct) — these join the eliminate list with their own precise fixed-cost lookup.
+  const growthExtra=computeGrowthExtra(pct);
+  const growthExtraList=growthExtra.list;
   const growthExtraCount=growthExtraList.length;
-  const growthExtraFixedMo=pct<0?((WHATIF.pool_growth_negative||{}).fixed_mo_by_tier||{})[String(pct)]||0:0;
-  const t1AssetCount=WHATIF.track1_utilization.assets.length;
-  const t2AssetCount=WHATIF.track2_cd_coverage.assets.length;
-  const track1AvgFixed=M.realloc_pool_fixed_cost_5mo/(t1AssetCount+t2AssetCount);
+  const growthExtraFixedMo=growthExtra.fixedMo;
 
-  const blendMove=isBaseline?0:tier.track1_move;
+  // ---- Remove / Reallocate / Add counters + core-vs-specialty split (single source of truth) ----
+  const rc=computeReallocationCounts(pct);
+  const t1AssetCount=rc.t1AssetCount, t2AssetCount=rc.t2AssetCount;
+  const track1AvgFixed=M.realloc_pool_fixed_cost_5mo/(t1AssetCount+t2AssetCount);
+  const blendMove=rc.blendMove, t2MoveNow=rc.t2MoveNow, t2RemoveNow=rc.t2RemoveNow;
+  let shortfallTrucks=rc.shortfallTrucks;
+  const coreRemoveCount=rc.coreRemoveCount, specialtyRemoveCount=rc.specialtyRemoveCount;
+  const coreRetainedForCapacity=rc.coreRetainedForCapacity;
   const blendEliminate=(isBaseline?t1AssetCount:tier.track1_remove)+growthExtraCount;
-  const shortfallTrucks=isBaseline?0:tier.shortfall_trucks;
+
+  let removeCount=0, reallocateCount=0;
+  if(reallocMode==='remove'){
+    removeCount=t1AssetCount+t2AssetCount+growthExtraCount;
+    reallocateCount=0;
+  }else if(reallocMode==='move'){
+    removeCount=0;
+    reallocateCount=t1AssetCount+t2AssetCount+growthExtraCount;
+  }else if(reallocMode==='blend'){
+    removeCount=rc.removeCount;
+    reallocateCount=rc.reallocateCount;
+  }
+  const addCount=shortfallTrucks;
+
 
   let fixed5mo=M.fixed_cost_5mo;
   if(reallocMode==='remove'){
@@ -1449,7 +1582,7 @@ function updWhatIf(){
   const variable5mo=projMiles*M.variable_rate_per_mile;
   const fuel5mo=projMiles*M.fuel_rate_per_mile;
   const projCombinedCost5mo=fixed5mo+variable5mo+fuel5mo;
-  const projCpd=projCombinedCost5mo/projDel;
+  const projCpd=Math.round(projCombinedCost5mo/projDel*100)/100; // round once — cpdChangePct below derives from this SAME rounded value
   const cpdChangePct=+((projCpd/cur.cpd-1)*100).toFixed(1);
 
   // ---- Annualized dollar cost impact vs. the SAME reallocation mode's own 0%-growth baseline ----
@@ -1464,10 +1597,9 @@ function updWhatIf(){
   }
   const milesBase=M.current_deliveries_ytd*M.current_mi_del;
   const cost5moBase=fixed5moBase+milesBase*(M.variable_rate_per_mile+M.fuel_rate_per_mile);
-  const cpdBase=cost5moBase/M.current_deliveries_ytd;
-  const annualizedDel=projDel/5*12;
+  const cpdBase=Math.round((cost5moBase/M.current_deliveries_ytd)*100)/100;
   const cpdDeltaVsBase=cpdBase-projCpd; // positive = savings per delivery
-  const annualDollarImpact=cpdDeltaVsBase*annualizedDel;
+  const janMayDollarImpact=cpdDeltaVsBase*M.current_deliveries_ytd; // grounded in actual Jan-May volume, not a growth-projected/annualized figure
 
 
   // Reallocation effect on Track 1 utilization (mixed: some up, some down)
@@ -1478,94 +1610,113 @@ function updWhatIf(){
 
   // Fixed cost effect: each mode has distinct, honest behavior
   const growthNote=growthExtraCount>0?' &mdash; pool grew by '+growthExtraCount+' asset'+(growthExtraCount===1?'':'s')+' as volume declined':'';
+  const retainNote=coreRetainedForCapacity>0?' &mdash; '+coreRetainedForCapacity+' core asset'+(coreRetainedForCapacity===1?'':'s')+' retained for capacity instead of removed, since the fleet is already short':'';
   const fixedCostNote=
     reallocMode==='remove'?'Fixed cost reduced &mdash; all '+totalReallocAssets+' assets removed from fleet, regardless of growth tier (growth-agnostic scenario)'+growthNote:
     reallocMode==='move'?'Fixed cost unchanged &mdash; '+totalReallocAssets+' assets relocated, not removed'+growthNote:
     reallocMode==='blend'?
-      (blendMove>0?
-        'Fixed cost reduced &mdash; '+(blendEliminate+t2AssetCount)+' of '+totalReallocAssets+' assets eliminated; '+blendMove+' of Track 1 moved to hot stores (growth needs them)'+(shortfallTrucks>0?' &mdash; &#9888; '+shortfallTrucks+' more trucks needed beyond the pool':''):
-        'Fixed cost reduced &mdash; all '+(blendEliminate+t2AssetCount)+' assets eliminated from fleet (none needed for growth at this tier)'+growthNote):
+      (reallocateCount>0?
+        'Fixed cost reduced &mdash; '+removeCount+' of '+totalReallocAssets+' assets eliminated; '+reallocateCount+' moved to hot stores/355CD (growth needs them)'+retainNote+(addCount>0?' &mdash; &#9888; '+addCount+' more trucks needed beyond the pool':''):
+        'Fixed cost reduced &mdash; all '+removeCount+' assets eliminated from fleet (none needed for growth at this tier)'+growthNote):
     'No reallocation applied';
 
-  const fleetUtilProj=WHATIF.fleet_util_projections[String(pct)][reallocMode];
+  const fleetUtilProj=computeFleetUtil(pct,reallocMode);
   const projFleetUtil=fleetUtilProj.fleet_util;
-  const projAssetCount=fleetUtilProj.asset_count;
+  const projAssetCount=Math.round(fleetUtilProj.asset_count);
 
   document.getElementById('wi-kpis').innerHTML=
     '<div class="kpi b"><div class="kl">Projected Deliveries (YTD-equiv)</div><div class="kv bl">'+Math.round(projDel).toLocaleString()+'</div><div class="ks">'+(isBaseline?'Current baseline':pctLabel+'% growth scenario')+'</div></div>'+
     '<div class="kpi b"><div class="kl">Annualized Deliveries</div><div class="kv bl">'+Math.round(projDel/5*12).toLocaleString()+'</div><div class="ks">Projected full-year pace at this scenario</div></div>'+
     '<div class="kpi b"><div class="kl">Annualized Density</div><div class="kv bl">'+Math.round(projDensity)+'<span style="font-size:14px;font-weight:400;"> /asset/yr</span></div><div class="ks">'+(projDensity>=870.6?'At/above 2022 proven ceiling (870.6)':projDensity>=860.0?'Above 2025 level (860.0)':projDensity>=837.0?'Above 2023 (837.0)':'Below 2023 level')+'</div></div>'+
     '<div class="kpi g"><div class="kl">Mi/Delivery</div><div class="kv gr">'+projMiDel.toFixed(2)+'</div><div class="ks">'+(miDelImprovement>0?'-'+miDelImprovement.toFixed(2)+'% (evidence-bounded)':'No improvement credited at this tier')+'</div></div>'+
-    '<div class="kpi g"><div class="kl">Combined Cost / Delivery</div><div class="kv gr">$'+projCpd.toFixed(2)+'</div><div class="ks">'+(cpdChangePct!==0?cpdChangePct.toFixed(1)+'% vs current':'Current baseline')+'</div></div>'+
-    '<div class="kpi '+(isBaseline?'d':annualDollarImpact>=0?'g':'r')+'"><div class="kl">'+tip('Annualized Cost Impact','(Baseline CPD under the selected reallocation mode &minus; scenario CPD) &times; annualized deliveries at this scenario. Baseline CPD is recomputed for whichever mode is selected, since Remove/Blend already shed fixed cost at 0% growth.')+'</div><div class="kv '+(isBaseline?'':annualDollarImpact>=0?'gr':'rd')+'">'+(isBaseline?'&mdash;':(annualDollarImpact>=0?'-$':'+$')+Math.abs(annualDollarImpact).toLocaleString(undefined,{maximumFractionDigits:0}))+'</div><div class="ks">'+(isBaseline?'Current baseline (no growth scenario)':(annualDollarImpact>=0?'Saved':'Added')+' vs. '+reallocMode+' mode at 0% &middot; $'+cpdBase.toFixed(2)+' baseline CPD')+'</div></div>'+
-    '<div class="kpi y"><div class="kl">Reallocation Pool</div><div class="kv yl">'+totalReallocAssets+'<span style="font-size:14px;font-weight:400;"> assets</span></div><div class="ks">'+fixedCostNote+'</div></div>'+
+    '<div class="kpi g"><div class="kl">Combined Cost / Delivery</div><div class="kv gr">$'+projCpd.toFixed(2)+'</div><div class="ks">'+(cpdChangePct===0?'Current baseline (Jan&ndash;May 2026, no reallocation)':cpdChangePct.toFixed(1)+'% vs Jan&ndash;May current ($'+cur.cpd.toFixed(2)+') &middot; reflects '+removeCount+' removed under '+reallocMode+' mode')+'</div></div>'+
+    '<div class="kpi r"><div class="kl">Remove: Core Delivery Assets</div><div class="kv rd">'+coreRemoveCount+'<span style="font-size:14px;font-weight:400;"> assets</span></div><div class="ks">20\' Slide, 24\' TA Flatbed, Tractor TA</div></div>'+
+    '<div class="kpi r"><div class="kl">Remove: Specialty Assets</div><div class="kv rd">'+specialtyRemoveCount+'<span style="font-size:14px;font-weight:400;"> assets</span></div><div class="ks">12\' Slide, Conveyor \u2014 not relocatable</div></div>'+
+    '<div class="kpi b"><div class="kl">'+tip('Reallocate','Three different reasons an asset can move rather than be eliminated: (1) Region 05 assets sent to 355CD \u2014 a standing policy independent of growth or decline, since 355CD is a permanent operational alternative for those 5 stores; (2) Track 1 core assets sent to a hot store because growth needs the capacity; (3) assets retained rather than removed because the fleet is already short. These are not the same thing, even though they all count as "moved, not eliminated."')+'</div><div class="kv bl">'+reallocateCount+'<span style="font-size:14px;font-weight:400;"> assets</span></div><div class="ks">'+[t2MoveNow>0?t2MoveNow+' to 355CD (standing policy)':null,blendMove>0?blendMove+' to hot store (growth-driven)':null,coreRetainedForCapacity>0?coreRetainedForCapacity+' retained (capacity shortfall)':null].filter(Boolean).join(' + ')+'</div></div>'+
+    '<div class="kpi '+(addCount>0?'r':'d')+'"><div class="kl">Add</div><div class="kv '+(addCount>0?'rd':'')+'">'+addCount+'<span style="font-size:14px;font-weight:400;"> assets</span></div><div class="ks">'+(addCount>0?'Needed beyond current fleet + pool':'None needed at this scenario')+'</div></div>'+
     '<div class="kpi '+(projFleetUtil>=40?'g':projFleetUtil>=35?'y':'r')+'"><div class="kl">Projected Fleet Time Away Util</div><div class="kv '+(projFleetUtil>=40?'gr':projFleetUtil>=35?'yl':'rd')+'">'+projFleetUtil.toFixed(1)+'%</div><div class="ks">vs. 40% goal &middot; '+projAssetCount+' assets in fleet at this scenario</div></div>';
 
   // ---- Benchmark chart (simple bar comparison) ----
   const fleetByYr=WHATIF.meta.historical_benchmarks.avg_fleet_by_year||{};
+  const postRemovalFleet=WHATIF.meta.current_fleet_size-removeCount;
+  const postRemovalDensity=(projDel/5*12)/postRemovalFleet;
+  const utilProjNone=computeFleetUtil(pct,'none');
+  const utilProjMode=computeFleetUtil(pct,reallocMode);
   const benchYears=[
-    {label:'2022',val:WHATIF.meta.historical_benchmarks['2022_density'],fleet:fleetByYr['2022']},
-    {label:'2023',val:WHATIF.meta.historical_benchmarks['2023_density'],fleet:fleetByYr['2023']},
-    {label:'2024',val:WHATIF.meta.historical_benchmarks['2024_density'],fleet:fleetByYr['2024']},
-    {label:"2025",val:WHATIF.meta.historical_benchmarks['2025_density_est'],fleet:fleetByYr['2025']},
-    {label:'2026 Current',val:cur.annualized_density,fleet:fleetByYr['2026_weighted']},
-    {label:'Scenario',val:projDensity,fleet:WHATIF.meta.current_fleet_size}
+    {label:'2022',val:WHATIF.meta.historical_benchmarks['2022_density'],fleet:fleetByYr['2022'],ta:HD.fa['2022']},
+    {label:'2023',val:WHATIF.meta.historical_benchmarks['2023_density'],fleet:fleetByYr['2023'],ta:HD.fa['2023']},
+    {label:'2024',val:WHATIF.meta.historical_benchmarks['2024_density'],fleet:fleetByYr['2024'],ta:HD.fa['2024']},
+    {label:"2025",val:WHATIF.meta.historical_benchmarks['2025_density_est'],fleet:fleetByYr['2025'],ta:HD.fa['2025']},
+    {label:'2026 Current',val:cur.annualized_density,fleet:fleetByYr['2026_weighted'],ta:HD.fa['2026']},
+    {label:'Scenario (fleet held flat)',val:projDensity,fleet:WHATIF.meta.current_fleet_size,ta:utilProjNone.fleet_util}
   ];
+  if(removeCount>0){
+    benchYears.push({label:'Scenario (post-removal fleet)',val:postRemovalDensity,fleet:postRemovalFleet,ta:utilProjMode.fleet_util,highlight:true});
+  }
+
   const maxVal=Math.max(...benchYears.map(b=>b.val))*1.1;
   document.getElementById('wi-benchmark-chart').innerHTML=
     '<div style="display:flex;align-items:center;gap:8px;padding:0 0 4px;">'+
-    '<div style="width:55px;"></div><div style="flex:1;"></div>'+
+    '<div style="width:150px;"></div><div style="flex:1;"></div>'+
     '<div style="width:42px;text-align:right;font-size:9px;color:var(--gy);text-transform:uppercase;">Del/Asset</div>'+
     '<div style="width:60px;text-align:right;font-size:9px;color:var(--gy);text-transform:uppercase;">Avg Fleet</div>'+
-    '<div style="width:90px;text-align:right;font-size:9px;color:var(--gy);text-transform:uppercase;">Annual Del.</div></div>'+
+    '<div style="width:90px;text-align:right;font-size:9px;color:var(--gy);text-transform:uppercase;">Annual Del.</div>'+
+    '<div style="width:60px;text-align:right;font-size:9px;color:var(--gy);text-transform:uppercase;">Time Away</div></div>'+
     '<div style="display:flex;flex-direction:column;gap:8px;padding:4px 0;">'+
     benchYears.map(b=>{
       const w=(b.val/maxVal*100).toFixed(1);
-      const isScenario=b.label==='Scenario';
-      const col=isScenario?'var(--bl)':(b.label==='2026 Current'?'var(--ym)':'var(--gy)');
-      const annDel=b.label==='Scenario'?Math.round(projDel/5*12).toLocaleString():
+      const isScenario=b.label.indexOf('Scenario')===0;
+      const overCeiling=b.val>870.6;
+      const col=b.highlight?(overCeiling?'var(--rd)':'#7b4fb0'):(isScenario?'var(--bl)':(b.label==='2026 Current'?'var(--ym)':'var(--gy)'));
+      const annDel=isScenario?Math.round(projDel/5*12).toLocaleString():
         b.label==='2026 Current'?M.historical_benchmarks['2026_ytd_deliveries'].toLocaleString()+'* YTD':
         (M.historical_benchmarks.annual_deliveries[b.label]||'').toLocaleString();
       const fleetAvg=b.fleet!=null?b.fleet.toFixed(1):'&mdash;';
+      const taVal=b.ta!=null?b.ta.toFixed(1)+'%':'&mdash;';
       return '<div style="display:flex;align-items:center;gap:8px;">'+
-        '<div style="width:55px;font-size:11px;font-weight:'+(isScenario?'700':'500')+';color:'+(isScenario?'var(--bl)':'#444')+';">'+b.label+'</div>'+
+        '<div style="width:150px;font-size:11px;font-weight:'+(isScenario?'700':'500')+';color:'+(b.highlight?col:(isScenario?'var(--bl)':'#444'))+';">'+b.label+(b.highlight?' &#9888;':'')+'</div>'+
         '<div style="flex:1;background:#f0f0f0;border-radius:3px;height:18px;position:relative;">'+
         '<div style="width:'+w+'%;background:'+col+';height:100%;border-radius:3px;"></div></div>'+
         '<div style="width:42px;text-align:right;font-size:11px;font-weight:700;">'+Math.round(b.val)+'</div>'+
         '<div style="width:60px;text-align:right;font-size:11px;color:var(--gy);">'+fleetAvg+'</div>'+
-        '<div style="width:90px;text-align:right;font-size:10px;color:var(--gy);">'+annDel+'</div></div>';
+        '<div style="width:90px;text-align:right;font-size:10px;color:var(--gy);">'+annDel+'</div>'+
+        '<div style="width:60px;text-align:right;font-size:11px;color:var(--gy);">'+taVal+'</div></div>';
     }).join('')+
     '</div>'+
     '<div style="margin-top:10px;padding:8px 10px;background:#f8f8f8;border-radius:4px;border-left:3px solid var(--ym);">'+
     '<p style="margin:0;font-size:11px;color:#444;line-height:1.5;">'+
-    '<strong>Context:</strong> 2026 is currently running at '+Math.round(M.historical_benchmarks.current_density)+'/truck/yr &mdash; already '+
-    Math.round((M.historical_benchmarks['2025_density_est']/M.historical_benchmarks.current_density-1)*100)+'% below the 2025 proven ceiling ('+M.historical_benchmarks['2025_density_est']+'/truck). '+
+    '<strong>Context:</strong> 2026 is currently running at '+Math.round(M.historical_benchmarks.current_density)+'/asset/yr &mdash; already '+
+    Math.round((1-M.historical_benchmarks.current_density/M.historical_benchmarks['2022_density'])*100)+'% below the 2022 proven ceiling ('+M.historical_benchmarks['2022_density']+'/asset). '+
     'The growth tiers shown are measured from the current 2026 pace, not from the ceiling. '+
-    'The fleet already has ~11% headroom before reaching proven capacity &mdash; only growth beyond that 11% gap represents genuinely new territory.</p></div>';
+    'The fleet has ~'+Math.round((M.historical_benchmarks['2022_density']/M.historical_benchmarks.current_density-1)*1000)/10+'% headroom before reaching proven capacity on a flat fleet &mdash; removing assets narrows that gap further, which is what the &#9888; post-removal row above shows.</p></div>';
 
   // ---- Fleet utilization trend chart across all 7 tiers, for the currently selected mode ----
   const modeLabels={none:'Off (growth only)',move:'Move to hot stores',remove:'Remove all (growth-agnostic)',blend:'Blend (move what growth needs)'};
   document.getElementById('wi-util-mode-label').innerHTML=modeLabels[reallocMode]+' &middot; goal: 40%';
   const utilTiers=[-10,-5,0,5,10,15,20,25,30];
-  const utilSeries=utilTiers.map(p=>({pct:p,util:WHATIF.fleet_util_projections[String(p)][reallocMode].fleet_util}));
+  const utilSeries=utilTiers.map(p=>({pct:p,util:computeFleetUtil(p,reallocMode).fleet_util}));
   const maxUtilVal=Math.max(45,...utilSeries.map(s=>s.util));
+  const BAR_AREA_PX=110;
+  const goalLineTop=(BAR_AREA_PX*(1-40/maxUtilVal)).toFixed(1);
   document.getElementById('wi-util-trend-chart').innerHTML=
-    '<div style="display:flex;align-items:flex-end;gap:10px;height:140px;padding:10px 4px;position:relative;">'+
-    '<div style="position:absolute;left:0;right:0;bottom:'+(40/maxUtilVal*100).toFixed(1)+'%;border-top:2px dashed var(--gr);"></div>'+
+    '<div style="display:flex;align-items:flex-end;gap:10px;padding:10px 4px 0;">'+
     utilSeries.map(s=>{
-      const h=(s.util/maxUtilVal*100).toFixed(1);
+      const barPx=(s.util/maxUtilVal*BAR_AREA_PX).toFixed(1);
       const isCurrentTier=s.pct===pct;
       const col=s.util>=40?'var(--gr)':s.util>=35?'var(--ym)':'var(--rd)';
       return '<div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;">'+
-        '<div style="font-size:11px;font-weight:700;'+(isCurrentTier?'text-decoration:underline;':'')+'">'+s.util.toFixed(1)+'%</div>'+
-        '<div style="width:100%;background:'+col+';border-radius:3px 3px 0 0;height:'+h+'%;'+(isCurrentTier?'box-shadow:0 0 0 2px var(--bl) inset;':'')+'"></div>'+
-        '<div style="font-size:10px;color:var(--gy);'+(isCurrentTier?'font-weight:700;color:var(--bl);':'')+'">'+(s.pct>=0?'+'+s.pct:s.pct)+'%</div></div>';
+        '<div style="font-size:11px;font-weight:700;height:14px;'+(isCurrentTier?'text-decoration:underline;':'')+'">'+s.util.toFixed(1)+'%</div>'+
+        '<div style="position:relative;width:100%;height:'+BAR_AREA_PX+'px;">'+
+        '<div style="position:absolute;left:0;right:0;top:'+goalLineTop+'px;border-top:2px dashed var(--gr);"></div>'+
+        '<div style="position:absolute;left:0;right:0;bottom:0;width:100%;background:'+col+';border-radius:3px 3px 0 0;height:'+barPx+'px;'+(isCurrentTier?'box-shadow:0 0 0 2px var(--bl) inset;':'')+'"></div>'+
+        '</div>'+
+        '<div style="font-size:10px;color:var(--gy);height:14px;'+(isCurrentTier?'font-weight:700;color:var(--bl);':'')+'">'+(s.pct>=0?'+'+s.pct:s.pct)+'%</div></div>';
     }).join('')+
     '</div>'+
     '<p style="margin:8px 0 0;font-size:11px;color:var(--gy);">Dashed line = 40% Time Away goal. Highlighted bar = currently selected growth tier. Recomputed from the actual resulting asset set at each tier/mode (eliminated assets drop out, moved assets adopt their destination store\u2019s current rate), with growth\u2019s effect applied proportionally to remaining away-time.</p>';
 
   // ---- Cost table ----
-  document.getElementById('wi-period-label').textContent=isBaseline?'Current (5-mo YTD basis)':pctLabel+'% scenario (5-mo YTD basis)';
+  document.getElementById('wi-period-label').textContent=isBaseline?'Current (Jan\u2013May 2026 basis)':pctLabel+'% scenario (Jan\u2013May 2026 basis)';
   document.getElementById('wi-cost-table').innerHTML=
     '<table style="width:100%;font-size:13px;"><tbody>'+
     '<tr><td style="padding:6px 0;color:var(--gy);">Deliveries</td><td style="text-align:right;font-weight:700;">'+Math.round(projDel).toLocaleString()+'</td></tr>'+
@@ -1579,7 +1730,7 @@ function updWhatIf(){
   // ---- Unified Reallocation Pool ----
   const upTier=(WHATIF.unified_pool||{}).assignments_by_tier||{};
   const upAssign=upTier[String(pct)]||[];
-  const cdProjUp=((WHATIF.unified_pool||{}).cd_projections_by_tier||{})[String(pct)]||{};
+  const cdProjUp=computeCdProjection(pct);
   const r5Stores=(WHATIF.unified_pool||{}).region5_stores||[];
   const r5Assets=upAssign.filter(a=>a.group==='region5');
   const t1Assets=upAssign.filter(a=>a.group==='track1'||a.group==='track1_growth');
@@ -1608,67 +1759,8 @@ function updWhatIf(){
     '<div class="kv '+(cdProjUp.util<=40?'gr':'yl')+'">'+cdProjUp.util+'%</div>'+
     '<div class="ks">'+cdProjUp.to_355cd+' assets from 5 stores &middot; '+cdProjUp.assets+' total at 355CD</div></div>':'';
 
-  document.getElementById('wi-unified-pool').innerHTML=
-    '<div class="kpi-row" style="margin-bottom:14px;">'+
-    '<div class="kpi b"><div class="kl">355CD Current Avg Util</div><div class="kv bl">'+WHATIF.track2_cd_coverage.cd_355_utilization.ytd_avg+'%</div><div class="ks">13 assets &middot; Jan&ndash;May 2026</div></div>'+
-    cdProjCard+'</div>'+
-
-    // Region 5 group
-    '<div style="margin-bottom:6px;padding:6px 10px;background:#f0f4ff;border-radius:4px;border-left:3px solid var(--bl);">'+
-    '<span style="font-size:12px;font-weight:600;color:var(--bl);">Region 05 &mdash; 355CD Service Area</span>'+
-    '<span style="font-size:11px;color:var(--gy);margin-left:8px;">'+r5Stores.join(', ')+'</span>'+
-    '<span style="font-size:11px;color:var(--gy);margin-left:8px;">&middot; Assets prioritized for 355CD; available for hot-store reallocation if not needed</span>'+
-    '</div>'+
-    '<div class="tw" style="margin-bottom:16px;"><table><thead><tr><th>Asset Type</th><th>From Store</th><th>Action at '+pctLabel+'%</th><th>Destination</th><th class="n">Util</th><th class="n">Avg Away</th></tr></thead><tbody>'+
-    r5Assets.map(assetRow).join('')+
-    '</tbody></table></div>'+
-
-    // Track 1 group
-    '<div style="margin-bottom:6px;padding:6px 10px;background:#f8f8f8;border-radius:4px;border-left:3px solid var(--gy);">'+
-    '<span style="font-size:12px;font-weight:600;color:#444;">Fleet-Wide Surplus Assets ('+t1Assets.length+')</span>'+
-    '<span style="font-size:11px;color:var(--gy);margin-left:8px;">&middot; Individual util &lt;20% &middot; Post-removal store util &le;36% &middot; Pickups and must-stay assets excluded'+(growthExtraCount>0?' &middot; includes '+growthExtraCount+' asset'+(growthExtraCount===1?'':'s')+' newly surplus from volume decline (single-rule check only, see below)':'')+'</span>'+
-    '</div>'+
-    '<div class="tw"><table><thead><tr><th>Asset Type</th><th>From Store</th><th>Action at '+pctLabel+'%</th><th>Destination</th><th class="n">Util</th><th class="n">Avg Away</th></tr></thead><tbody>'+
-    t1Assets.map(assetRow).join('')+
-    '</tbody></table></div>';
-
-  // ---- Pool growth under decline (only meaningful for negative growth) ----
-  const pgCard=document.getElementById('wi-pool-growth-card');
-  if(pct<0){
-    pgCard.style.display='';
-    const pg=((WHATIF.pool_growth_negative||{}).by_tier||{})[String(pct)]||[];
-    document.getElementById('wi-pool-growth').innerHTML=
-      '<p style="margin:0 0 10px;font-size:12px;color:var(--gy);line-height:1.5;">'+WHATIF.pool_growth_negative.note+'</p>'+
-      (pg.length?
-        '<div class="tw"><table><thead><tr><th>Asset Type</th><th>Store</th><th class="n">Current Util</th><th class="n">Projected Util at '+pctLabel+'%</th></tr></thead><tbody>'+
-        pg.map(a=>'<tr><td>'+a.type+'</td><td>'+a.store+'</td><td class="n">'+a.current_util+'%</td><td class="n" style="color:var(--rd);font-weight:700;">'+a.projected_util+'%</td></tr>').join('')+
-        '</tbody></table></div>'+
-        '<p style="margin:10px 0 0;font-size:12px;font-weight:600;color:var(--bl);">Pool would grow from 22 to '+(22+pg.length)+' assets at '+pctLabel+'% growth ('+pg.length+' newly surplus).</p>'
-        :'<p style="margin:0;font-size:12px;color:var(--gy);">No additional assets cross the 20% threshold at this decline level.</p>');
-  }else{
-    pgCard.style.display='none';
-  }
-
-  // ---- Hot stores table (top 15) ----
-  document.getElementById('wi-hotstores').innerHTML=
-    '<div class="tw"><table><thead><tr><th>Rank</th><th>Store</th><th class="n">Time Away</th><th class="n">Weight Util</th><th class="n">Assets</th></tr></thead><tbody>'+
-    WHATIF.hot_stores.slice(0,15).map((h,i)=>{
-      const flag=h.name.includes('Baytown')?' <span class="pill util-yellow" style="font-size:10px;" title="Also appears in cold-store pool">&#9888;</span>':'';
-      return '<tr><td>'+(i+1)+'</td><td><strong>'+h.name+'</strong>'+flag+'</td><td class="n">'+h.ta_util+'%</td><td class="n">'+h.wu_util+'%</td><td class="n">'+h.asset_count+'</td></tr>';
-    }).join('')+
-    '</tbody></table></div>';
 
   // ---- Methodology / flags ----
-  document.getElementById('wi-methodology').innerHTML=
-    '<div style="font-size:12px;color:var(--gy);line-height:1.6;">'+
-    '<p><strong>Track 1 surplus selection:</strong> individual asset utilization below 20% AND post-removal store average at or below 36%. The 36% ceiling is intentionally set below the 40% Time Away goal and at the current average of the fleet&#39;s top 10 stores (35.5%) &mdash; ensuring no store is pushed beyond territory the fleet&#39;s best locations are already demonstrating today. Pickups excluded fleet-wide (store-to-door strategic asset). Tractor SA assets at Las Cruces and El Paso excluded (operation-specific). New Caney excluded (new store). Loaner pools excluded.</p>'+
-    '<p><strong>Hot store definition:</strong> combined distance-to-goal score across 40% Time Away and 50% Weight Utilization targets, stores with fewer than 4 assets excluded as unreliable signals, 355CD-served stores excluded as destinations.</p>'+
-    '<p><strong>Mi/Delivery improvement:</strong> credited only up to the empirically proven ceiling (2025 density came within 1.9% of 2022&#39;s all-time-best mi/delivery). No improvement assumed at or below the current 2026 baseline density; credit scales linearly between the 2026 baseline (823.6/asset) and the 2022 proven ceiling (870.6/asset, trucks+pickups basis); capped at 1.9% beyond that &mdash; the model does not extrapolate improvement beyond what has actually been demonstrated.</p>'+
-    '<p><strong>Weight Utilization:</strong> unlike Time Away Utilization (5+ years of monthly history), Weight Utilization has no comparable historical baseline. Projections reflect current store-level ratios applied forward, not trend-validated improvement.</p>'+
-    '<p>&#9888; '+WHATIF.flags.baytown_dual+'</p>'+
-    '<p>&#9888; '+WHATIF.flags.new_caney_new_store+'</p>'+
-    '<p>&#9888; '+WHATIF.flags.track1_mixed_outcome+'</p>'+
-    '</div>';
 }
 
 // ===== FLEET CHARGES =====
