@@ -889,12 +889,12 @@ function renderOverview(){
     '<div class="kpi d"><div class="kl">'+tip('Fleet &amp; Fuel Cost / Mile',TIPS.combined_cpm)+'</div><div class="kv">$'+((CHARGES.summary.fleet_total_mo*6+FUEL.fleet.total)/ML.fleet).toFixed(2)+'</div><div class="ks">Fleet charge + fuel &divide; miles driven</div></div>'+
     '<div class="kpi d"><div class="kl">'+tip('Combined Cost / Delivery',TIPS.combined_cpd)+'</div><div class="kv">$'+((CHARGES.summary.fleet_total_mo*6+FUEL.fleet.total)/CHARGES.summary.fleet_deliveries).toFixed(2)+'</div><div class="ks">Fleet charge + fuel &divide; deliveries</div></div>';
 
-  const fleetDailyDel=(DEL.fleet/111).toFixed(1);
+  const fleetDailyDel=(DEL.fleet/133).toFixed(1);
   const pct8Cls=RT.fleet.pct8>=75?'gr':RT.fleet.pct8>=50?'am':'rd';
   const pct8KpiCls=RT.fleet.pct8>=75?'g':RT.fleet.pct8>=50?'y':'r';
   document.getElementById('overview-kpis2').innerHTML=
     '<div class="kpi '+(RWU.fleet>=50?'g':RWU.fleet>=35?'y':'r')+'"><div class="kl">'+tip('Avg Route Weight Util',TIPS.rwu)+'</div><div class="kv '+(RWU.fleet>=50?'gr':RWU.fleet>=35?'yl':'rd')+'">'+RWU.fleet+'%</div><div class="ks">Payload capacity used per route &bull; store ops scope</div></div>'+
-    '<div class="kpi b"><div class="kl">'+tip('Avg Daily Deliveries',TIPS.del_day)+'</div><div class="kv bl">'+fleetDailyDel+'</div><div class="ks">Fleet-wide &bull; '+fmtNum(DEL.fleet)+' total &bull; 111 business days</div></div>'+
+    '<div class="kpi b"><div class="kl">'+tip('Avg Daily Deliveries',TIPS.del_day)+'</div><div class="kv bl">'+fleetDailyDel+'</div><div class="ks">Fleet-wide &bull; '+fmtNum(DEL.fleet)+' total &bull; 133 business days</div></div>'+
     '<div class="kpi b"><div class="kl">'+tip('Avg Delivery Duration',TIPS.duration)+'</div><div class="kv bl" style="font-size:26px;">'+DUR.fleet.dur+'</div><div class="ks">Stores 1–120, 355CD &amp; 761–768 &bull; 412 assets</div></div>'+
     '<div class="kpi b"><div class="kl">'+tip('% Asset Days Active',TIPS.pct_active)+'</div><div class="kv bl">'+DUR.fleet.pct_active+'%</div><div class="ks">Stores 1–120, 355CD &amp; 761–768 only</div></div>'+
     '<div class="kpi b"><div class="kl">'+tip('Avg Deliveries / Route',TIPS.del_trip)+'</div><div class="kv bl">'+DUR.fleet.del_per_route+'</div><div class="ks">Stops per route run &bull; Stores 1–120, 355CD &amp; 761–768</div></div>'+
@@ -935,7 +935,7 @@ function renderOverview(){
     const tags=(isLoaner(l.location)?'<span class="loaner-badge">Loaner</span>':'')+(isCD(l.location)?'<span class="cd-badge">Central Delivery</span>':'');
     const rwuLoc=RWU.loc[String(l.location)];
     const wu=rwuLoc!=null?'<span class="pill '+(rwuLoc>=50?'util-green':rwuLoc>=35?'util-yellow':'util-red')+'">'+rwuLoc+'%</span>':'—';
-    const dd=DEL.loc[String(l.location)]!=null?(DEL.loc[String(l.location)]/111).toFixed(1):'—';
+    const dd=DEL.loc[String(l.location)]!=null?(DEL.loc[String(l.location)]/133).toFixed(1):'—';
     const lrt=RT.loc[String(l.location)];
     const pct8pill=lrt?'<span class="pill '+(lrt.pct8>=75?'util-green':lrt.pct8>=50?'util-yellow':'util-red')+'">'+lrt.pct8+'%</span>':'—';
     const ldurObj=DUR.loc[String(l.location)];
@@ -958,7 +958,7 @@ function renderRegions(){
       const tags=(isLoaner(l.location)?'<span class="loaner-badge">Loaner</span>':'')+(isCD(l.location)?'<span class="cd-badge">CD</span>':'');
       const rwuLoc=RWU.loc[String(l.location)];
     const wu=rwuLoc!=null?'<span class="pill '+(rwuLoc>=50?'util-green':rwuLoc>=35?'util-yellow':'util-red')+'">'+rwuLoc+'%</span>':'—';
-      const lDailyDel=DEL.loc[String(l.location)]!=null?(DEL.loc[String(l.location)]/111).toFixed(1):'—';
+      const lDailyDel=DEL.loc[String(l.location)]!=null?(DEL.loc[String(l.location)]/133).toFixed(1):'—';
       const llrt=RT.loc[String(l.location)];
       const lpct8=llrt?'<span class="pill '+(llrt.pct8>=75?'util-green':llrt.pct8>=50?'util-yellow':'util-red')+'">'+llrt.pct8+'%</span>':'—';
       const lldurObj=DUR.loc[String(l.location)];
@@ -995,7 +995,7 @@ function renderRegions(){
         '</div>'+
         '<div class="rsb">'+
           '<div class="rsb-cell"><div class="rsb-label">'+tip('Wt Utilization',TIPS.rwu)+'</div><div class="rsb-val" style="color:'+(RWU.reg[reg.region]!=null?(RWU.reg[reg.region]>=50?'var(--gr)':RWU.reg[reg.region]>=35?'var(--ym)':'var(--rd)'):'var(--bl)')+'">'+(RWU.reg[reg.region]!=null?RWU.reg[reg.region]+'%':'—')+'</div></div>'+
-          '<div class="rsb-cell"><div class="rsb-label">'+tip('Avg Daily Deliveries',TIPS.del_day)+'</div><div class="rsb-val" style="color:var(--bl)">'+(DEL.reg[reg.region]!=null?(DEL.reg[reg.region]/111).toFixed(1):'—')+'</div></div>'+
+          '<div class="rsb-cell"><div class="rsb-label">'+tip('Avg Daily Deliveries',TIPS.del_day)+'</div><div class="rsb-val" style="color:var(--bl)">'+(DEL.reg[reg.region]!=null?(DEL.reg[reg.region]/133).toFixed(1):'—')+'</div></div>'+
           '<div class="rsb-cell"><div class="rsb-label">'+tip('Route Efficiency',TIPS.mi_del)+'</div><div class="rsb-val" style="color:var(--bl)">'+(MD.reg[reg.region]!=null?MD.reg[reg.region]:'—')+' mi</div></div>'+
           '<div class="rsb-cell"><div class="rsb-label">'+tip('Total Miles',TIPS.total_mi)+'</div><div class="rsb-val" style="color:var(--bl)">'+fmtNum(ML.reg[reg.region]||reg.total_miles_90)+'</div></div>'+
         '</div>'+
@@ -1042,7 +1042,7 @@ function renderStores(){
   document.getElementById('store-grid').innerHTML=filtered.map(l=>{
     const c=uCls(l.avg_util),pct=(l.avg_util*100).toFixed(1),id='loc-'+l.location;
     const storeAssets=(RD.assetsByLoc[String(l.location)]||[]);
-    const rows=storeAssets.map(a=>{const art=assetRT(a.aid);const adurObj=assetDur(a.aid);const adur=adurObj?adurObj.dur:'—';const apctActive=adurObj?adurObj.pct_active+'%':'—';return'<tr><td>'+a.aid+(isStoreAssignedLoaner(a.aid)?'<span class="store-assigned-badge">Store Assigned</span>':'')+'</td><td>'+a.type+'</td><td class="n">'+a.days+'</td><td class="n">'+pill(a.util)+'</td><td class="n">'+(assetRWU(a.aid)!=null?'<span class="pill '+(assetRWU(a.aid)>=50?'util-green':assetRWU(a.aid)>=35?'util-yellow':'util-red')+'">'+assetRWU(a.aid)+'%</span>':'—')+'</td><td class="n">'+(assetMD(a.aid)!=null?assetMD(a.aid)+' mi':'—')+'</td><td class="n">'+(assetDel(a.aid)!=null?(assetDel(a.aid)/111).toFixed(1):'—')+'</td><td class="n">'+(()=>{const t=assetTag(a.aid);return t&&DUR.asset[t]&&DUR.asset[t].trips_per_day!=null?DUR.asset[t].trips_per_day:'—';})()+'</td><td class="n">'+adur+'</td><td class="n">'+apctActive+'</td><td class="n">'+fmtNum(assetMiles(a.aid)!=null?assetMiles(a.aid):0)+'</td>'+
+    const rows=storeAssets.map(a=>{const art=assetRT(a.aid);const adurObj=assetDur(a.aid);const adur=adurObj?adurObj.dur:'—';const apctActive=adurObj?adurObj.pct_active+'%':'—';return'<tr><td>'+a.aid+(isStoreAssignedLoaner(a.aid)?'<span class="store-assigned-badge">Store Assigned</span>':'')+'</td><td>'+a.type+'</td><td class="n">'+a.days+'</td><td class="n">'+pill(a.util)+'</td><td class="n">'+(assetRWU(a.aid)!=null?'<span class="pill '+(assetRWU(a.aid)>=50?'util-green':assetRWU(a.aid)>=35?'util-yellow':'util-red')+'">'+assetRWU(a.aid)+'%</span>':'—')+'</td><td class="n">'+(assetMD(a.aid)!=null?assetMD(a.aid)+' mi':'—')+'</td><td class="n">'+(assetDel(a.aid)!=null?(assetDel(a.aid)/133).toFixed(1):'—')+'</td><td class="n">'+(()=>{const t=assetTag(a.aid);return t&&DUR.asset[t]&&DUR.asset[t].trips_per_day!=null?DUR.asset[t].trips_per_day:'—';})()+'</td><td class="n">'+adur+'</td><td class="n">'+apctActive+'</td><td class="n">'+fmtNum(assetMiles(a.aid)!=null?assetMiles(a.aid):0)+'</td>'+
     '<td class="n">'+(assetCPD(a.aid)!=null?'$'+assetCPD(a.aid).toFixed(2):'—')+'</td>'+
     '<td class="n">'+(assetFuel(a.aid)!=null&&assetDel(a.aid)>0?'$'+(assetFuel(a.aid)/assetDel(a.aid)).toFixed(2):'—')+'</td>'+
     '<td class="n">'+(assetCPD(a.aid)!=null&&assetFuel(a.aid)!=null&&assetDel(a.aid)>0?'<strong>$'+(assetCPD(a.aid)+assetFuel(a.aid)/assetDel(a.aid)).toFixed(2)+'</strong>':'—')+'</td>'+
@@ -1052,7 +1052,7 @@ function renderStores(){
     const tags=(isLoaner(l.location)?'<span class="loaner-badge">Regional Loaner</span>':'')+(isCD(l.location)?'<span class="cd-badge">Central Delivery</span>':'')+(String(l.location)==='121'?'<span class="insuf-badge">Insufficient Data</span>':'');
     return'<div class="store-card">'+
       '<div class="sch b'+c[5]+'" style="border-left-color:'+(c==='util-green'?'var(--gr)':c==='util-yellow'?'var(--yl)':'var(--rd)')+';" onclick="toggleStore(this.dataset.r)" data-r="'+id+'">'+
-        '<div><div class="s-num">'+(l.identifier||l.location)+''+tags+'</div><div class="s-meta">'+regBadge(l.region)+'&nbsp;'+l.asset_count+' asset'+(l.asset_count!==1?'s':'')+(DEL.loc[String(l.location)]?'&nbsp;&bull;&nbsp;'+(DEL.loc[String(l.location)]/111).toFixed(1)+' del/day':'')+(MD.loc[String(l.location)]?'&nbsp;&bull;&nbsp;'+MD.loc[String(l.location)]+' mi/delivery':'')+(DUR.loc[String(l.location)]?'&nbsp;&bull;&nbsp;'+DUR.loc[String(l.location)].dur+' avg delivery &bull; '+DUR.loc[String(l.location)].pct_active+'% asset days active':'')+(RT.loc[String(l.location)]?'&nbsp;&bull;&nbsp;&#9650; '+RT.loc[String(l.location)].rst+'&nbsp;&bull;&nbsp;'+RT.loc[String(l.location)].pct8+'% before 7AM':'')+(storeMo(l.location)?'&nbsp;&bull;&nbsp;$'+Number(storeMo(l.location)).toLocaleString(undefined,{maximumFractionDigits:0})+'/mo fleet':'')+(storeFuelMo(l.location)?'&nbsp;&bull;&nbsp;$'+Number(storeFuelMo(l.location)).toLocaleString(undefined,{maximumFractionDigits:0})+'/mo fuel':'')+'</div></div>'+
+        '<div><div class="s-num">'+(l.identifier||l.location)+''+tags+'</div><div class="s-meta">'+regBadge(l.region)+'&nbsp;'+l.asset_count+' asset'+(l.asset_count!==1?'s':'')+(DEL.loc[String(l.location)]?'&nbsp;&bull;&nbsp;'+(DEL.loc[String(l.location)]/133).toFixed(1)+' del/day':'')+(MD.loc[String(l.location)]?'&nbsp;&bull;&nbsp;'+MD.loc[String(l.location)]+' mi/delivery':'')+(DUR.loc[String(l.location)]?'&nbsp;&bull;&nbsp;'+DUR.loc[String(l.location)].dur+' avg delivery &bull; '+DUR.loc[String(l.location)].pct_active+'% asset days active':'')+(RT.loc[String(l.location)]?'&nbsp;&bull;&nbsp;&#9650; '+RT.loc[String(l.location)].rst+'&nbsp;&bull;&nbsp;'+RT.loc[String(l.location)].pct8+'% before 7AM':'')+(storeMo(l.location)?'&nbsp;&bull;&nbsp;$'+Number(storeMo(l.location)).toLocaleString(undefined,{maximumFractionDigits:0})+'/mo fleet':'')+(storeFuelMo(l.location)?'&nbsp;&bull;&nbsp;$'+Number(storeFuelMo(l.location)).toLocaleString(undefined,{maximumFractionDigits:0})+'/mo fuel':'')+'</div></div>'+
         '<div class="s-right">'+
           (RWU.loc[String(l.location)]!=null?'<div style="text-align:center;min-width:48px;"><div style="font-size:9px;text-transform:uppercase;letter-spacing:.4px;color:var(--gy);font-weight:700;">Wt Util</div><div style="font-size:11px;font-weight:700;color:'+(RWU.loc[String(l.location)]>=50?'var(--gr)':RWU.loc[String(l.location)]>=35?'var(--ym)':'var(--rd)')+'">'+RWU.loc[String(l.location)]+'%</div></div>':'')+
           (MD.loc[String(l.location)]!=null?'<div style="text-align:center;min-width:48px;"><div style="font-size:9px;text-transform:uppercase;letter-spacing:.4px;color:var(--gy);font-weight:700;">Mi/Del</div><div style="font-size:11px;font-weight:700;color:var(--bl);">'+MD.loc[String(l.location)]+' mi</div></div>':'')+
@@ -1066,7 +1066,7 @@ function renderStores(){
       '<div class="rsb" style="border-bottom:1px solid var(--bd);">'+
         '<div class="rsb-cell"><div class="rsb-label">'+tip('Avg Utilization',TIPS.util)+'</div><div class="rsb-val '+c+'">'+pct+'%</div></div>'+
         '<div class="rsb-cell"><div class="rsb-label">'+tip('Wt Utilization',TIPS.rwu)+'</div><div class="rsb-val" style="color:'+(RWU.loc[String(l.location)]>=50?'var(--gr)':RWU.loc[String(l.location)]>=35?'var(--ym)':'var(--rd)')+'">'+(RWU.loc[String(l.location)]!=null?RWU.loc[String(l.location)]+'%':'—')+'</div></div>'+
-        '<div class="rsb-cell"><div class="rsb-label">'+tip('Avg Daily Deliveries',TIPS.del_day)+'</div><div class="rsb-val" style="color:var(--bl)">'+(DEL.loc[String(l.location)]!=null?(DEL.loc[String(l.location)]/111).toFixed(1):'—')+'</div></div>'+
+        '<div class="rsb-cell"><div class="rsb-label">'+tip('Avg Daily Deliveries',TIPS.del_day)+'</div><div class="rsb-val" style="color:var(--bl)">'+(DEL.loc[String(l.location)]!=null?(DEL.loc[String(l.location)]/133).toFixed(1):'—')+'</div></div>'+
         '<div class="rsb-cell"><div class="rsb-label">'+tip('Route Efficiency',TIPS.mi_del)+'</div><div class="rsb-val" style="color:var(--bl)">'+(MD.loc[String(l.location)]!=null?MD.loc[String(l.location)]:'—')+' mi</div></div>'+
       '</div>'+
       '<div class="rsb" style="border-bottom:1px solid var(--bd);">'+
