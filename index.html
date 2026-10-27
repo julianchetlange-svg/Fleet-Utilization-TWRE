@@ -10,8 +10,8 @@
 <script>if(typeof Chart==="undefined"){window.Chart=function(){return{destroy:()=>{}}};Chart.register=()=>{};console.warn("Chart.js not loaded - charts disabled");}</script>
 <style>
 :root{
-  --gr:#1B5C2E;--gr2:#2c7a42;--grl:#e6f2e6;--grp:#f2f8f2;
-  --yl:#F5C400;--ym:#c9a000;--yd:#7a5f00;
+  --gr:#0D5540;--gr2:#17765A;--grl:#E2EFEA;--grp:#EFF6F3;
+  --yl:#FFE900;--ym:#7A6F00;--yd:#5E5600;--ych:#E3CD00;
   --dk:#1C1C1C;--ch:#2e2e2e;--gy:#5e5e5e;--gl:#8a8a8a;
   --bd:#e0e0e0;--bg:#f2f4f2;
   --rd:#b83232;--rdb:#fdeaea;
@@ -28,7 +28,8 @@ body{font-family:'Source Sans 3',sans-serif;background:var(--bg);color:var(--dk)
 .lm .a{font-family:'Oswald',sans-serif;font-size:8.5px;font-weight:700;color:var(--gr);letter-spacing:1px;text-transform:uppercase;line-height:1;}
 .lm .b{font-family:'Oswald',sans-serif;font-size:17px;font-weight:700;color:var(--gr);line-height:1;}
 .lm .c{font-family:'Oswald',sans-serif;font-size:6px;font-weight:600;color:var(--gr);letter-spacing:1.5px;text-transform:uppercase;line-height:1.3;}
-.lt{margin-left:11px;}
+.logo{height:52px;width:auto;display:block;flex-shrink:0;}
+.lt{margin-left:14px;}
 .lt .br{font-family:'Oswald',sans-serif;font-size:19px;font-weight:700;color:white;letter-spacing:.5px;line-height:1;}
 .lt .br em{color:var(--yl);font-style:normal;}
 .lt .dp{font-size:11px;color:rgba(255,255,255,.55);letter-spacing:1.1px;text-transform:uppercase;margin-top:2px;}
@@ -133,11 +134,11 @@ tbody tr:hover td{background:var(--grp);}
   visibility:hidden;opacity:0;
   position:fixed;z-index:99999;
   top:0;left:0;
-  background:#1B5C2E;color:#fff;
+  background:#0D5540;color:#fff;
   font-family:Arial,sans-serif;font-size:11px;line-height:1.5;
   padding:8px 12px;border-radius:5px;
   min-width:220px;max-width:320px;
-  border-top:3px solid #F5C400;
+  border-top:3px solid #FFE900;
   box-shadow:0 4px 12px rgba(0,0,0,0.25);
   pointer-events:none;
   transition:opacity 0.1s ease;
@@ -147,16 +148,16 @@ tbody tr:hover td{background:var(--grp);}
   content:'';position:absolute;top:100%;left:50%;
   transform:translateX(-50%);
   border:6px solid transparent;
-  border-top-color:#1B5C2E;
+  border-top-color:#0D5540;
 }
 /* tooltip shown via mcTipPos JS */
 .insuf-badge{display:inline-block;padding:2px 7px;border-radius:3px;font-size:10px;font-weight:700;background:#888;color:#fff;margin-left:5px;letter-spacing:.3px;}
 .recent-svc-badge{display:inline-block;padding:2px 7px;border-radius:3px;font-size:10px;font-weight:700;background:#E3E7EB;color:#4A5560;margin-left:5px;letter-spacing:.3px;}
-.store-assigned-badge{display:inline-block;padding:2px 7px;border-radius:3px;font-size:10px;font-weight:700;background:#F5C400;color:#1B3A00;margin-left:5px;letter-spacing:.3px;}
+.store-assigned-badge{display:inline-block;padding:2px 7px;border-radius:3px;font-size:10px;font-weight:700;background:#FFE900;color:#0D5540;margin-left:5px;letter-spacing:.3px;}
 .loaner-badge{display:inline-block;padding:2px 7px;border-radius:3px;font-size:10px;font-weight:700;background:var(--blb);color:var(--bl);margin-left:5px;}
-.served-badge{display:inline-block;padding:2px 7px;border-radius:3px;font-size:10px;font-weight:700;background:#E8F0E9;color:#1B5C2E;margin-left:5px;letter-spacing:.3px;}
+.served-badge{display:inline-block;padding:2px 7px;border-radius:3px;font-size:10px;font-weight:700;background:#E8F0E9;color:#0D5540;margin-left:5px;letter-spacing:.3px;}
 .util-none{color:#999;}
-.cd-badge{display:inline-block;padding:2px 7px;border-radius:3px;font-size:10px;font-weight:700;background:#fff3cd;color:var(--yd);margin-left:5px;}
+.cd-badge{display:inline-block;padding:2px 7px;border-radius:3px;font-size:10px;font-weight:700;background:#FFF9C2;color:var(--yd);margin-left:5px;}
 .badge-up{background:var(--grl);color:var(--gr);}
 .badge-dn{background:var(--rdb);color:var(--rd);}
 .badge-warn{background:var(--amb);color:var(--am);}
@@ -186,7 +187,7 @@ tbody tr:hover td{background:var(--grp);}
 /* STORE CARDS */
 .store-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:20px;}
 .store-card{background:white;border-radius:6px;border:1px solid var(--bd);overflow:hidden;transition:box-shadow .15s;min-width:0;}
-.store-card:hover{box-shadow:0 2px 10px rgba(27,92,46,.12);}
+.store-card:hover{box-shadow:0 2px 10px rgba(13,85,64,.12);}
 .sch{padding:10px 13px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;border-left:4px solid transparent;user-select:none;}
 .sch:hover{background:var(--grp);}
 .s-num{font-family:'Oswald',sans-serif;font-size:13px;font-weight:600;}
@@ -246,8 +247,8 @@ select:focus,input:focus{outline:none;border-color:var(--gr);}
 <!-- HEADER -->
 <div class="hdr">
   <div class="htop">
-    <div class="lm"><div class="a">McCoy's</div><div class="b">MC</div><div class="c">Building Supply</div></div>
-    <div class="lt"><div class="br">McCoy's <em>Building Supply</em></div><div class="dp">Fleet Operations &middot; Utilization Command Center</div></div>
+    <img class="logo" src="data:image/png;base64,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" alt="McCoy's Building Supply" width="248" height="119">
+    <div class="lt"><div class="br">Fleet Operations</div><div class="dp">Utilization Command Center</div></div>
     <div class="hdiv"></div>
     <div class="rt"><div class="h1">Truck Utilization &mdash; Current &amp; Historical</div><div class="sub">YTD Jan&ndash;September 2026 &bull; Historical 2019&ndash;2026 &bull; 8 Regions</div></div>
     <div class="hm">
@@ -379,7 +380,7 @@ select:focus,input:focus{outline:none;border-color:var(--gr);}
       <tbody id="store-charge-body"></tbody>
     </table></div></div>
   </div>
-  <div class="placeholder-note" style="background:#f0f8f0;border:1px solid #a8d5b5;border-radius:6px;padding:14px 18px;margin-top:16px;font-size:12px;color:#1B5C2E;">
+  <div class="placeholder-note" style="background:#EFF6F3;border:1px solid #A6CFC0;border-radius:6px;padding:14px 18px;margin-top:16px;font-size:12px;color:#0D5540;">
     <strong>&#128161; Right-Sizing Opportunity:</strong> Stores with utilization below 35% and multiple assets represent the highest P&amp;L reduction opportunity. Each flatbed with removed from fleet saves ~$37,607/year in fixed charges alone.
   </div>
 </div>
@@ -561,7 +562,7 @@ select:focus,input:focus{outline:none;border-color:var(--gr);}
 
 <div class="ft">
   <span>McCoy's Fleet Operations &middot; Utilization Command Center &middot; Confidential</span>
-  <span>YTD: Jan&ndash;September 2026 &middot; Historical: 2019&ndash;2026 &middot; 9-hr operating day standard &middot; 8 Regions &bull; 89 Locations &bull; 412 Assets</span>
+  <span>YTD: Jan&ndash;September 2026 &middot; Historical: 2019&ndash;2026 &middot; 9-hr operating day standard &middot; <span class="js-reg-count">8</span> Regions &bull; <span class="js-loc-count">94</span> Locations &bull; <span class="js-asset-count">423</span> Assets</span>
 </div>
 
 <script>
@@ -580,9 +581,9 @@ const MA=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec
 const YEARS=HD.y;
 const REGS=Object.keys(HD.r);
 const BENCH=40;
-const YC={'2019':'#8B9EB7','2020':'#C4855A','2021':'#7BAF7B','2022':'#C46E6E','2023':'#7B9EC4','2024':'#C4A84F','2025':'#1B5C2E','2026':'#F5C400'};
-const SC=['#1B5C2E','#2E7D9E','#8B4513','#6B3FA0','#C46E1A','#2E8B57','#8B0000','#1A5276','#7D6608','#4A235A','#1B4F72','#6E2F1A','#1D8348'];
-const REGION_COLORS={'Region 01':'#1a4f7a','Region 02':'#5a2d82','Region 03':'#1B5C2E','Region 04':'#7a3a00','Region 05':'#b83232','Region 06':'#005f6b','Region 07':'#1a6b3c','Region 08':'#4a3200'};
+const YC={'2019':'#8B9EB7','2020':'#C4855A','2021':'#7BAF7B','2022':'#C46E6E','2023':'#7B9EC4','2024':'#C4A84F','2025':'#0D5540','2026':'#E3CD00'};
+const SC=['#0D5540','#2E7D9E','#8B4513','#6B3FA0','#C46E1A','#2E8B57','#8B0000','#1A5276','#7D6608','#4A235A','#1B4F72','#6E2F1A','#1D8348'];
+const REGION_COLORS={'Region 01':'#1a4f7a','Region 02':'#5a2d82','Region 03':'#0D5540','Region 04':'#7a3a00','Region 05':'#b83232','Region 06':'#005f6b','Region 07':'#1a6b3c','Region 08':'#4a3200'};
 
 function uCls(u){if(u==null)return'util-none';return u>=0.40?'util-green':u>=0.35?'util-yellow':'util-red';}
 function pill(u){
@@ -894,7 +895,7 @@ function renderOverview(){
               {l:'30–40%',mn:.30,mx:.40},{l:'40–50%',mn:.40,mx:.50},{l:'50%+',mn:.50,mx:1.01}];
   CH['dist']=mkChart('distChart',{type:'bar',
     data:{labels:bins.map(b=>b.l),datasets:[{data:bins.map(b=>assets.filter(a=>a.util>=b.mn&&a.util<b.mx).length),
-      backgroundColor:bins.map(b=>b.mn>=.40?'#1B5C2E':b.mn>=.35?'#F5C400':'#b83232'),borderRadius:3}]},
+      backgroundColor:bins.map(b=>b.mn>=.40?'#0D5540':b.mn>=.35?'#E3CD00':'#b83232'),borderRadius:3}]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.y+' assets'}}},
       scales:{y:{beginAtZero:true,grid:{color:'#f0f0f0'}},x:{grid:{display:false}}}}});
 
@@ -903,7 +904,7 @@ function renderOverview(){
   const regData=RD.regions;
   CH['region']=mkChart('regionChart',{type:'bar',
     data:{labels:regData.map(r=>r.region.replace('Region ','Reg ')),datasets:[{data:regData.map(r=>+(r.avg_util*100).toFixed(1)),
-      backgroundColor:regData.map(r=>r.avg_util>=.40?'#1B5C2E':r.avg_util>=.35?'#F5C400':'#b83232'),borderRadius:3}]},
+      backgroundColor:regData.map(r=>r.avg_util>=.40?'#0D5540':r.avg_util>=.35?'#E3CD00':'#b83232'),borderRadius:3}]},
     options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',
       plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.x+'% avg utilization'}}},
       scales:{x:{min:10,max:50,grid:{color:'#f0f0f0'},ticks:{callback:v=>v+'%'}},y:{grid:{display:false}}}}});
@@ -1148,8 +1149,8 @@ function renderHFleet(){
   const trendData=tlData.map((_,i)=>tlData[i]!=null?parseFloat((slope*i+intercept).toFixed(2)):null);
   CH['hft']=mkChart('hc-ft',{type:'line',
     data:{labels:tlLabels,datasets:[
-      {label:'Monthly Avg',data:tlData,borderColor:'#1B5C2E',backgroundColor:'rgba(27,92,46,0.08)',borderWidth:2,pointRadius:2,pointHoverRadius:5,tension:.3,spanGaps:false,fill:true},
-      {label:'Trend',data:trendData,borderColor:'#F5C400',backgroundColor:'transparent',borderWidth:2,pointRadius:0,borderDash:[6,4],tension:0,spanGaps:true}
+      {label:'Monthly Avg',data:tlData,borderColor:'#0D5540',backgroundColor:'rgba(13,85,64,0.08)',borderWidth:2,pointRadius:2,pointHoverRadius:5,tension:.3,spanGaps:false,fill:true},
+      {label:'Trend',data:trendData,borderColor:'#E3CD00',backgroundColor:'transparent',borderWidth:2,pointRadius:0,borderDash:[6,4],tension:0,spanGaps:true}
     ]},options:{...lo(10,50),scales:{...lo(10,50).scales,x:{grid:{display:false},ticks:{font:{size:10},maxTicksLimit:20,maxRotation:45}}}},plugins:[BP]});
 
   // Annual bar
@@ -1251,8 +1252,8 @@ function updHStore(){
   const stTrend=stD.map((_,i)=>stD[i]!=null?parseFloat((stSlope*i+stInt).toFixed(2)):null);
   CH['hst']=mkChart('hc-st',{type:'line',
     data:{labels:stL,datasets:[
-      {label:'Monthly Avg',data:stD,borderColor:'#1B5C2E',backgroundColor:'rgba(27,92,46,0.08)',borderWidth:2,pointRadius:2,pointHoverRadius:5,tension:.3,spanGaps:false,fill:true},
-      {label:'Trend',data:stTrend,borderColor:'#F5C400',backgroundColor:'transparent',borderWidth:2,pointRadius:0,borderDash:[6,4],tension:0,spanGaps:true}
+      {label:'Monthly Avg',data:stD,borderColor:'#0D5540',backgroundColor:'rgba(13,85,64,0.08)',borderWidth:2,pointRadius:2,pointHoverRadius:5,tension:.3,spanGaps:false,fill:true},
+      {label:'Trend',data:stTrend,borderColor:'#E3CD00',backgroundColor:'transparent',borderWidth:2,pointRadius:0,borderDash:[6,4],tension:0,spanGaps:true}
     ]},options:{...lo(10,50),scales:{...lo(10,50).scales,x:{grid:{display:false},ticks:{font:{size:10},maxTicksLimit:20,maxRotation:45}}}},plugins:[BP]});
 
   dc('hsa');
@@ -1450,6 +1451,6 @@ function renderCharges(){
 }
 
 </script>
-<script>document.querySelectorAll('.js-asset-count').forEach(e=>e.textContent=RD.assets.length);</script>
+<script>document.querySelectorAll('.js-asset-count').forEach(e=>e.textContent=RD.assets.length);document.querySelectorAll('.js-loc-count').forEach(e=>e.textContent=RD.locs.length);document.querySelectorAll('.js-reg-count').forEach(e=>e.textContent=RD.regions.length);</script>
 </body>
 </html>
